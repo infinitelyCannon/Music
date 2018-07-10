@@ -1,0 +1,75 @@
+const {app, BrowserWindow, ipcMain} = require('electron');
+const {default: installExtension, REACT_DEVELOPER_TOOLS} = require('electron-devtools-installer');
+const Store = require('electron-store');
+const eStore = new Store();
+
+let win;
+
+function createWindow(){
+    win = new BrowserWindow({
+        width: 900,
+        height: 800,
+        webPreferences: {nodeIntegrationInWorker: true},
+        frame: false
+    });
+
+    win.loadFile('index.html');
+
+    installExtension(REACT_DEVELOPER_TOOLS)
+        .then((name) => console.log('Added Extension: ' + name))
+        .catch((err) => console.log('An error occurred: ', err));
+
+    win.webContents.openDevTools();
+
+    win.on('maximize', () =>{
+        win.webContents.send('maxed', true);
+    });
+
+    win.on('unmaximize', () => {
+        win.webContents.send('maxed', false);
+    });
+
+    win.on('closed', () => {
+        win = null;
+    });
+}
+
+app.on('ready', createWindow);
+
+ipcMain.on('asynchronous-message', (event, arg) => {
+    if(arg === 'exit'){
+        win.close();
+    }
+    else if(arg === 'mini'){
+        win.minimize();
+    }
+    else{
+        eStore.set('songs', arg);
+        event.sender.send('asynchronous-reply', "Done.");
+    }
+});
+
+ipcMain.on('synchronous-message', (event, arg) =>{
+    if(arg === 'max'){
+        if(win.isMaximized()){
+            win.unmaximize();
+            event.returnValue = false;
+        }
+        else{
+            win.maximize();
+            event.returnValue = true;
+        }
+    }
+});
+
+app.on('window-all-closed', () => {
+    if(process.platform !== 'darwin'){
+        app.quit();
+    }
+});
+
+app.on('activate', () => {
+    if(win === null){
+        createWindow();
+    }
+});
