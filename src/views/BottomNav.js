@@ -64,7 +64,7 @@ class BottomNav extends React.Component{
                         <span id="time-end">5:23</span>
                         <div id="audio-track">
                             <input type="range" min="0" max="100" />
-                            <progress className="progress is-small" value="50" max="100"></progress>
+                            <progress className="progress is-small is-primary" value="50" max="100"></progress>
                         </div>
                     </div>
                 </div>

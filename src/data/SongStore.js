@@ -24,9 +24,9 @@ class SongStore extends ReduceStore{
     }
 
     getInitialState(){
-        let songs = window.eStore.get('songs');
-        let albums = window.eStore.get('albums');
-        let artists = window.eStore.get('artists');
+        let music = window.eStore.get('songs');
+        /* let albums = window.eStore.get('albums');
+        let artists = window.eStore.get('artists'); */
 
         return ((music == undefined) ? Immutable.List() : Immutable.List(music));
     }

@@ -26,7 +26,34 @@ class Content extends React.Component{
             return <button onClick={this.openFolders}>Add Folder(s)</button>;
         }
         else{
-            return <h1>Hello World!</h1>;
+            return (
+                <table className="table is-fullwidth is-striped is-hoverable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Artist</th>
+                            <th>Album</th>
+                            <th>
+                                <span className="icon is-medium">
+                                    <i className="mdi mdi-24px mdi-clock-outline"></i>
+                                </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            [...this.props.songs.values()].map((val) => (
+                                <tr key={val.id}>
+                                    <td>{val.title}</td>
+                                    <td>{val.artist}</td>
+                                    <td>{val.album}</td>
+                                    <td>{val.duration.toTime()}</td>
+                                </tr>
+                            ))
+                        }
+                    </tbody>
+                </table>
+            );
         }
     }
 }
