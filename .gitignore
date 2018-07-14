@@ -3,3 +3,5 @@
 preview.html
 /mockups
 mockup.svg
+dist/main.js
+dist/css/bundle.min.css

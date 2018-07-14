@@ -5,6 +5,9 @@ import MusicDispatcher from './MusicDispatcher';
 import ActionTypes from './ActionTypes';
 import _ from 'underscore';
 import {ipcRenderer} from 'electron';
+import {spawn} from 'child_process';
+import fs from 'fs';
+import hash from 'hash-sum';
 
 function safeVal(value, fallback){
     if(typeof value == undefined || value == null){
@@ -14,8 +17,35 @@ function safeVal(value, fallback){
         return _.uniq(value).toString().replace(',', ', ');
     }
     else{
-        return value.trim();
+        return value;
     }
+}
+
+function safeImg(data, name){
+    let webp, path;
+
+    if(data === undefined || data.length === 0){
+        return 'dist/blankCover.png';
+    }
+
+    path = window.dataPath + '/img/' + hash(name) + (data[0].format.indexOf('png') != -1 ? '.png' : '.jpeg');
+
+    fs.writeFile(path, data[0].data, (err) => {
+        if(err) throw err;
+        webp = spawn('./lib/webp/cwebp.exe', [path, '-o', window.dataPath + '/img/' + hash(name) + '.webp']);
+        webp.stdout.on('data', (data) => {
+            
+        });
+        webp.stderr.on('data', (data) => {
+            //console.log("Bin Error: " + data);
+        });
+        webp.on('close', (code) => {
+            fs.unlink(path, (err) => {if(err){console.log("Deletion Error: " + err)}});
+            console.log("New Image!");
+        });
+    });
+
+    return window.dataPath + '/img/' + hash(name) + '.webp';
 }
 
 class SongStore extends ReduceStore{
@@ -48,7 +78,7 @@ class SongStore extends ReduceStore{
                         year: safeVal(action.info.common.year, NaN),
                         genre: safeVal(action.info.common.genre, ""),
                         duration: action.info.format.duration,
-                        cover: safeVal(action.info.common.picture[0].data, []),
+                        cover: safeImg(action.info.common.picture, action.dir.replace('/', '\\')),
                         coverType: safeVal(action.info.common.picture[0].format, ""),
                         trackNum: safeVal(action.info.common.track.no, NaN),
                         diskNum: safeVal(action.info.common.disk.no, NaN)
