@@ -29,9 +29,9 @@ function safeImg(data, name){
         return 'dist/blankCover.png';
     }
 
-    path = window.dataPath + '/img/' + hash(name) + (data[0].format.indexOf('png') != -1 ? '.png' : '.jpeg');
+    path = window.dataPath + '/img/' + hash(name) + '.' + data[0].format.slice(data[0].format.indexOf('/') + 1);
 
-    fs.writeFile(path, data[0].data, (err) => {
+    fs.writeFileSync(path, data[0].data);/*, (err) => {
         if(err) throw err;
         webp = spawn('./lib/webp/cwebp.exe', [path, '-o', window.dataPath + '/img/' + hash(name) + '.webp']);
         webp.stdout.on('data', (data) => {
@@ -42,11 +42,12 @@ function safeImg(data, name){
         });
         webp.on('close', (code) => {
             fs.unlink(path, (err) => {if(err){console.log("Deletion Error: " + err)}});
-            console.log("New Image!");
+            //console.log("New Image!");
         });
     });
+    */
 
-    return window.dataPath + '/img/' + hash(name) + '.webp';
+    return path;
 }
 
 class SongStore extends ReduceStore{
@@ -111,7 +112,7 @@ class SongStore extends ReduceStore{
                 year: safeVal(action.info.common.year, NaN),
                 artist: safeVal(action.info.common.albumartist, safeVal(action.info.common.artists, "Unknown Artist")),
                 genre: safeVal(action.info.common.genre, ""),
-                cover: (action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(action.dir.replace('/', '\\')) + '.webp')
+                cover: (action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(action.dir.replace('/', '\\')) + '.' + action.info.common.picture[0].format.slice(action.info.common.picture[0].format.indexOf('/') + 1))
             }));
             ipcRenderer.send('asynchronous-message', {msg: 'addAlbum', data: albums.toArray()});
         }
@@ -122,7 +123,7 @@ class SongStore extends ReduceStore{
                     year: safeVal(action.info.common.year, NaN),
                     artist: safeVal(action.info.common.albumartist, safeVal(action.info.common.artists, "Unknown Artist")),
                     genre: safeVal(action.info.common.genre, ""),
-                    cover: (action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(action.dir.replace('/', '\\')) + '.webp')
+                    cover: (action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(action.dir.replace('/', '\\')) + '.' + action.info.common.picture[0].format.slice(action.info.common.picture[0].format.indexOf('/') + 1))
                 }));
                 ipcRenderer.send('asynchronous-message', {msg: 'addAlbum', data: albums.toArray()});
             }
@@ -159,9 +160,6 @@ class SongStore extends ReduceStore{
 
     reduce(state, action){
         let result;
-        ipcRenderer.on('asynchronous-reply', (event, arg) => {
-            //console.log(arg);
-        });
         switch(action.type){
             case ActionTypes.ADD_SONG:
                 result = Object.assign({}, state, {

@@ -52,9 +52,8 @@ ipcMain.on('asynchronous-message', (event, arg) => {
     if(arg === 'mini'){
         win.minimize();
     }
-    else if(arg.msg === 'addSong'){
+    if(arg.msg === 'addSong'){
         eStore.set('songs', arg.data);
-        event.sender.send('asynchronous-reply', "Done.");
     }
     if(arg.msg === 'addAlbum'){
         eStore.set('albums', arg.data);
