@@ -13,7 +13,7 @@ const Song =
     isMultiSong: false,
     isFragment: false,
     fragments: [],
-    cover: [],
+    cover: '',
     coverType: '',
     trackNum: 0,
     diskNum: 0

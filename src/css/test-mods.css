@@ -233,3 +233,8 @@ table{
     position: relative;
     top: 14px;
 }
+
+li a{
+    /*transition: border-bottom-color 0.5s;*/
+    transition: all 0.35s;
+}

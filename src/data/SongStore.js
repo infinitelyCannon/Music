@@ -1,5 +1,6 @@
 import Immutable from 'immutable';
 import Song from './Song';
+import Album from './Album';
 import {ReduceStore} from 'flux/utils';
 import MusicDispatcher from './MusicDispatcher';
 import ActionTypes from './ActionTypes';
@@ -54,46 +55,127 @@ class SongStore extends ReduceStore{
     }
 
     getInitialState(){
-        let music = window.eStore.get('songs');
-        /* let albums = window.eStore.get('albums');
-        let artists = window.eStore.get('artists'); */
+        let config = window.eStore.get('state');
+        let opening = {
+            route: (config === undefined ? ["songs", "alphaDesc", "all"] : config.route),
+            songs: Immutable.List(window.eStore.get('songs')),
+            albums: null
+        };
 
-        return ((music == undefined) ? Immutable.List() : Immutable.List(music));
+        return opening;
+    }
+
+    createSong(state, action){
+        let songs = Immutable.List(window.eStore.get('songs'));
+        let fileName = action.dir.replace('/', '\\');
+
+        if( songs.find((value) => {return value.id === fileName}) === undefined ){
+            songs = songs.push(Object.assign({}, Song, {
+                id: action.dir.replace('/', '\\'),
+                title: safeVal(action.info.common.title, fileName.slice(fileName.lastIndexOf('\\') + 1, fileName.lastIndexOf('.'))),
+                artist: safeVal(action.info.common.artists, "Unknown Artist"),
+                albumArtist: safeVal(action.info.common.albumartist, safeVal(action.info.common.artists, "Unknown Artist")),
+                album: safeVal(action.info.common.album, "Unknown Album"),
+                year: safeVal(action.info.common.year, NaN),
+                genre: safeVal(action.info.common.genre, ""),
+                duration: action.info.format.duration,
+                cover: safeImg(action.info.common.picture, fileName),
+                coverType: safeVal(action.info.common.picture[0].format, ""),
+                trackNum: safeVal(action.info.common.track.no, NaN),
+                diskNum: safeVal(action.info.common.disk.no, NaN)
+            }))
+            .sort((a, b) => {
+                if(a.title < b.title){return -1;}
+                if(a.title > b.title){return 1;}
+                if(a.title === b.title){return 0;}
+            });
+
+            ipcRenderer.send('asynchronous-message', {msg: 'addSong', data: songs.toArray()});
+        }
+
+        if(state.route[0] === 'songs'){
+            return songs;
+        }
+        else{
+            return null;
+        }
+    }
+
+    createAlbum(state, action){
+        let albums = Immutable.List(window.eStore.get('albums'));
+        let tempIndex = albums.findIndex((value) => {return value.name === safeVal(action.info.common.album, "Unknown Album")});
+
+        if(tempIndex === -1){
+            albums = albums.push(Object.assign({}, Album, {
+                name: safeVal(action.info.common.album, "Unknown Album"),
+                year: safeVal(action.info.common.year, NaN),
+                artist: safeVal(action.info.common.albumartist, safeVal(action.info.common.artists, "Unknown Artist")),
+                genre: safeVal(action.info.common.genre, ""),
+                cover: (action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(action.dir.replace('/', '\\')) + '.webp')
+            }));
+            ipcRenderer.send('asynchronous-message', {msg: 'addAlbum', data: albums.toArray()});
+        }
+        else{
+            if(action.info.common.trackNum === 1){
+                albums = albums.update(tempIndex, (value) => Object.assign({}, value, {
+                    name: safeVal(action.info.common.album, "Unknown Album"),
+                    year: safeVal(action.info.common.year, NaN),
+                    artist: safeVal(action.info.common.albumartist, safeVal(action.info.common.artists, "Unknown Artist")),
+                    genre: safeVal(action.info.common.genre, ""),
+                    cover: (action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(action.dir.replace('/', '\\')) + '.webp')
+                }));
+                ipcRenderer.send('asynchronous-message', {msg: 'addAlbum', data: albums.toArray()});
+            }
+        }
+
+        if(state.route[0].indexOf('Album') != -1){
+            return albums;
+        }
+        else{
+            return null;
+        }
+    }
+
+    updateSongs(nextRoute){
+        switch(nextRoute[0]){
+            case 'songs':
+                return Immutable.List(window.eStore.get('songs'));
+            case 'oneAlbum':
+                return Immutable.List(window.eStore.get('songs')).filter((val) => {val.album === nextRoute[2]});
+            default:
+                return null;
+        }
+    }
+
+    updateAlbums(nextRoute){
+        switch(nextRoute[0]){
+            case 'allAlbums':
+            case 'oneAlbum':
+                return Immutable.List(window.eStore.get('albums'));
+            default:
+                return null;
+        }
     }
 
     reduce(state, action){
-        let result, fileName = action.dir.replace('/', '\\');
+        let result;
         ipcRenderer.on('asynchronous-reply', (event, arg) => {
             //console.log(arg);
         });
         switch(action.type){
             case ActionTypes.ADD_SONG:
-                if(state.find( (value) => {return value.id === action.dir.replace('/', '\\')}) === undefined){
-                    result = state.push(Object.assign({}, Song, {
-                        id: action.dir.replace('/', '\\'),
-                        title: safeVal(action.info.common.title, fileName.slice(fileName.lastIndexOf('\\') + 1, fileName.lastIndexOf('.'))),
-                        artist: safeVal(action.info.common.artists, "Unknown Artist"),
-                        albumArtist: safeVal(action.info.common.albumartist, safeVal(action.info.common.artists, "Unknown Artist")),
-                        album: safeVal(action.info.common.album, "Unknown Album"),
-                        year: safeVal(action.info.common.year, NaN),
-                        genre: safeVal(action.info.common.genre, ""),
-                        duration: action.info.format.duration,
-                        cover: safeImg(action.info.common.picture, action.dir.replace('/', '\\')),
-                        coverType: safeVal(action.info.common.picture[0].format, ""),
-                        trackNum: safeVal(action.info.common.track.no, NaN),
-                        diskNum: safeVal(action.info.common.disk.no, NaN)
-                    }))
-                    .sort((a, b) =>{
-                        if(a.title < b.title){return -1;}
-                        if(a.title > b.title){return 1;}
-                        if(a.title === b.title){return 0;}
-                    });
-                    ipcRenderer.send('asynchronous-message', result.toArray());
-                    return result;
-                }
-                else{
-                    return state
-                }
+                result = Object.assign({}, state, {
+                    songs: this.createSong(state, action),
+                    albums: this.createAlbum(state, action)
+                });
+                return result;
+            case ActionTypes.NAVIGATE_UI:
+                result = Object.assign({}, state, {
+                    route: [action.primary, action.secondary, action.tertiary],
+                    songs: this.updateSongs([action.primary, action.secondary, action.tertiary]),
+                    albums: this.updateAlbums([action.primary, action.secondary, action.tertiary])
+                });
+                return result;
             default:
                 return state;
         }

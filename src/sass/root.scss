@@ -151,6 +151,12 @@ input[type=range]::-webkit-slider-runnable-track{
     }
 }
 
+li{
+    a{
+        transition: all 0.35s;
+    }
+}
+
 ::-webkit-scrollbar{
     width: 15px;
 }

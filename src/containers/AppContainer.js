@@ -11,13 +11,14 @@ class AppContainer extends React.Component{
 
     static calculateState(prevState){
         return {
-            songs: SongStore.getState(),
-            onAdd: MusicActions.addSong
+            music: SongStore.getState(),
+            onAdd: MusicActions.addSong,
+            navigateUI: MusicActions.navigateUI
         };
     }
 
     render(){
-        return <RootView songs={this.state.songs} onAdd={this.state.onAdd} />;
+        return <RootView music={this.state.music} onAdd={this.state.onAdd} navigate={this.state.navigateUI} />;
     }
 }
 

@@ -4,6 +4,7 @@ import {ReduceStore} from 'flux/utils';
 import MusicDispatcher from './MusicDispatcher';
 import ActionTypes from './ActionTypes';
 import SongStore from './SongStore';
+import SettingStore from './SettingStore';
 import _ from 'underscore';
 
 class AlbumStore extends ReduceStore{
@@ -13,13 +14,28 @@ class AlbumStore extends ReduceStore{
 
     getInitialState(){
         let albums = window.eStore.get('albums');
+        let neededView = SettingStore.getState().route;
 
-        return ((albums == undefined) ? Immutable.List() : Immutable.List(albums));
+        if(neededView[0] === "allAlbums"){
+            return (albums === undefined ? Immutable.List() : Immutable.List(albums));
+        }
+        else{
+            return null;
+        }
     }
 
     reduce(state, action){
         let database, first, item, collection, count, index, start;
         const list = Immutable.List();
+
+        let data = window.eStore.get("albums");
+
+        switch(action.type){
+            case ActionTypes.ADD_SONG:
+                break;
+            default:
+                return state;
+        }
 
         if(action.type == ActionTypes.SYNC_ALBUM){
             database = SongStore.getState().toArray();

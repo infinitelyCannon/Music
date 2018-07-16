@@ -4,7 +4,7 @@ require('velocity-animate');
 require('velocity-animate/velocity.ui');
 import NavBar from './Navbar';
 import BottomNav from './BottomNav';
-//import Content from './Content';
+import {musicTable, albumGrid} from './Content';
 //const fs = require('fs');
 
 class RootView extends React.Component{
@@ -49,38 +49,23 @@ class RootView extends React.Component{
     }
 
     render(){
+        var content;
+        switch(this.props.music.route[0]){
+            case 'songs':
+                content = musicTable(this.props);
+                break;
+            case 'allAlbums':
+                content = albumGrid(this.props);
+                break;
+            default:
+                content = <p>You shouldn't see this!!!</p>;
+                break;
+        }
+
         return (
             <div>
-                <NavBar />
-                <div id="container" style={{paddingTop: '20px'}}>
-                    <button style={{height: 'fit-content'}} onClick={this.openFolders}>Add Folder(s)</button>
-                    <table className="table is-fullwidth is-striped is-hoverable">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Artist</th>
-                                <th>Album</th>
-                                <th>
-                                    <span className="icon is-medium">
-                                        <i className="mdi mdi-24px mdi-clock-outline"></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                [...this.props.songs.values()].map((val) => (
-                                    <tr key={val.id}>
-                                        <td>{val.title}</td>
-                                        <td>{val.artist}</td>
-                                        <td>{val.album}</td>
-                                        <td>{val.duration.toTime()}</td>
-                                    </tr>
-                                ))
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <NavBar {...this.props} addMusic={this.openFolders} />
+                {content}
                 <BottomNav />
             </div>
         );

@@ -26,6 +26,15 @@ const Actions = {
         MusicDispatcher.dispatch({
             type: ActionTypes.SYNC_ARTIST
         });
+    },
+
+    navigateUI(first, second, third){
+        MusicDispatcher.dispatch({
+            type: ActionTypes.NAVIGATE_UI,
+            primary: first,
+            secondary: second,
+            tertiary: third
+        });
     }
 };
 

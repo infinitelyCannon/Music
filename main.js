@@ -49,12 +49,15 @@ ipcMain.on('asynchronous-message', (event, arg) => {
     if(arg === 'exit'){
         win.close();
     }
-    else if(arg === 'mini'){
+    if(arg === 'mini'){
         win.minimize();
     }
-    else{
-        eStore.set('songs', arg);
+    else if(arg.msg === 'addSong'){
+        eStore.set('songs', arg.data);
         event.sender.send('asynchronous-reply', "Done.");
+    }
+    if(arg.msg === 'addAlbum'){
+        eStore.set('albums', arg.data);
     }
 });
 

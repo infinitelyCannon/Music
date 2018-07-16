@@ -1,6 +1,6 @@
 import React from 'react';
-import {ipcRenderer} from 'electron'
-import VelocityComponent from 'velocity-react/velocity-component'
+import {ipcRenderer} from 'electron';
+import VelocityComponent from 'velocity-react/velocity-component';
 import VelocityTransitionGroup from 'velocity-react/velocity-transition-group';
 
 
@@ -59,6 +59,7 @@ class Navbar extends React.Component{
                 <VelocityComponent animation={drawerAnimation} duration={250}>
                     <div className="drawer">
                         <p>Hello World!</p>
+                        <button onClick={this.props.addMusic}>Add Folder(s)</button>
                     </div>
                 </VelocityComponent>
                 <VelocityTransitionGroup enter={overlayEntry} leave={overlayExit} duration={250}>
@@ -97,17 +98,17 @@ class Navbar extends React.Component{
                 </div>
                 <div className="tabs">
                     <ul>
-                        <li>
-                            <a>Albums</a>
+                        <li className={this.props.music.route[0].indexOf('Album') != -1 ? "is-active" : ""}>
+                            <a onClick={() => this.props.navigate("allAlbums", this.props.music.route[1], this.props.music.route[2])}>Albums</a>
                         </li>
-                        <li className="is-active">
-                            <a>Songs</a>
+                        <li className={this.props.music.route[0].indexOf('song') != -1 ? "is-active" : ""}>
+                            <a onClick={() => this.props.navigate("songs", this.props.music.route[1], this.props.music.route[2])}>Songs</a>
                         </li>
-                        <li>
-                            <a>Artists</a>
+                        <li className={this.props.music.route[0].indexOf('artist') != -1 ? "is-active" : ""}>
+                            <a onClick={() => this.props.navigate("artists", this.props.music.route[1], this.props.music.route[2])}>Artists</a>
                         </li>
-                        <li>
-                            <a>Playlists</a>
+                        <li className={this.props.music.route[0].indexOf('playlist') != -1 ? "is-active" : ""}>
+                            <a onClick={() => this.props.navigate("playlists", this.props.music.route[1], this.props.music.route[2])}>Playlists</a>
                         </li>
                         <li style={{borderLeft: '1px solid #ddd',margin: '0 5px',padding: '0 5px'}}>
                             <span>Genres: </span>
