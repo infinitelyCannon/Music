@@ -48,8 +48,9 @@ function albumGrid(props){
                         <div className="card-content">
                             <div className="media">
                                 <div className="media-content">
-                                    <p className="title is-5">{val.name}</p>
-                                    <p className="subtitle is-6">{val.artist}</p>
+                                    <span title={val.name} className="title is-5">{val.name}</span>
+                                    <br />
+                                    <span title={val.artist} className="subtitle is-6">{val.artist}</span>
                                 </div>
                             </div>
                         </div>

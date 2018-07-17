@@ -52,12 +52,6 @@ ipcMain.on('asynchronous-message', (event, arg) => {
     if(arg === 'mini'){
         win.minimize();
     }
-    if(arg.msg === 'addSong'){
-        eStore.set('songs', arg.data);
-    }
-    if(arg.msg === 'addAlbum'){
-        eStore.set('albums', arg.data);
-    }
 });
 
 ipcMain.on('synchronous-message', (event, arg) =>{
@@ -70,6 +64,14 @@ ipcMain.on('synchronous-message', (event, arg) =>{
             win.maximize();
             event.returnValue = true;
         }
+    }
+    if(arg.msg === 'addSong'){
+        eStore.set('songs', arg.data);
+        event.returnValue = null;
+    }
+    if(arg.msg === 'addAlbum'){
+        eStore.set('albums', arg.data);
+        event.returnValue = null;
     }
 });
 

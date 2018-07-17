@@ -14,7 +14,7 @@
     width: 100vw;
     height: calc(100vh - (93px + 92px + 30px));
     align-content: flex-start;
-    padding: 0px 30px 30px 20px;
+    padding: 0px 25px 25px 20px;
     overflow-y: scroll;
     overflow-x: hidden;
 }
@@ -154,6 +154,12 @@ input[type=range]::-webkit-slider-runnable-track{
 li{
     a{
         transition: all 0.35s;
+    }
+}
+
+.media-content{
+    .title{
+        white-space: nowrap;
     }
 }
 

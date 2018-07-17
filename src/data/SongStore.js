@@ -91,7 +91,7 @@ class SongStore extends ReduceStore{
                 if(a.title === b.title){return 0;}
             });
 
-            ipcRenderer.send('asynchronous-message', {msg: 'addSong', data: songs.toArray()});
+            ipcRenderer.sendSync('synchronous-message', {msg: 'addSong', data: songs.toArray()});
         }
 
         if(state.route[0] === 'songs'){
@@ -114,7 +114,7 @@ class SongStore extends ReduceStore{
                 genre: safeVal(action.info.common.genre, ""),
                 cover: (action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(action.dir.replace('/', '\\')) + '.' + action.info.common.picture[0].format.slice(action.info.common.picture[0].format.indexOf('/') + 1))
             }));
-            ipcRenderer.send('asynchronous-message', {msg: 'addAlbum', data: albums.toArray()});
+            ipcRenderer.sendSync('synchronous-message', {msg: 'addAlbum', data: albums.toArray()});
         }
         else{
             if(action.info.common.trackNum === 1){
@@ -125,7 +125,7 @@ class SongStore extends ReduceStore{
                     genre: safeVal(action.info.common.genre, ""),
                     cover: (action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(action.dir.replace('/', '\\')) + '.' + action.info.common.picture[0].format.slice(action.info.common.picture[0].format.indexOf('/') + 1))
                 }));
-                ipcRenderer.send('asynchronous-message', {msg: 'addAlbum', data: albums.toArray()});
+                ipcRenderer.sendSync('synchronous-message', {msg: 'addAlbum', data: albums.toArray()});
             }
         }
 
