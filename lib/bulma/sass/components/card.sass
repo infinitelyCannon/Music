@@ -16,17 +16,17 @@ $card-margin: 8px !default
 =card-grid($min, $max, $num)
   @media screen and (min-width: $min) and (max-width: $max)
     .card
-      flex: 0 0 calc((100% / #{$num}) - 20px)
+      width: calc((100% / #{$num}) - 20px)
 
 =card-grid-max($max, $num)
   @media screen and (max-width: $max)
     .card
-      flex: 0 0 calc((100% / #{$num}) - 20px)
+      width: calc((100% / #{$num}) - 20px)
 
 =card-grid-min($min, $num)
   @media screen and (min-width: $min)
     .card
-      flex: 0 0 calc((100% / #{$num}) - 20px)
+      width: calc((100% / #{$num}) - 20px)
 
 .card
   background-color: $card-background-color

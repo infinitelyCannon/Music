@@ -24,6 +24,7 @@ gulp.task('make', function(){
         .exclude('child_process')
         .exclude('electron')
         .exclude("fs")
+        .exclude('url')
         .bundle()
         .pipe(source('./src/index.js'))
         .pipe(rename('main.js'))

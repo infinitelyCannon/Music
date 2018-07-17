@@ -7,7 +7,7 @@ function mainHelper(dir){
     var stat;
 
     for(var i = 0; i < items.length; i++){
-        var file = dir + '\\' + items[i];
+        var file = dir + '/' + items[i];
 
         stat = fs.statSync(file);
         if(stat.isDirectory()){

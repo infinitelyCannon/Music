@@ -9,6 +9,7 @@ import {ipcRenderer} from 'electron';
 import {spawn} from 'child_process';
 import fs from 'fs';
 import hash from 'hash-sum';
+import {URL} from 'url';
 
 function safeVal(value, fallback){
     if(typeof value == undefined || value == null){
@@ -68,19 +69,20 @@ class SongStore extends ReduceStore{
 
     createSong(state, action){
         let songs = Immutable.List(window.eStore.get('songs'));
-        let fileName = action.dir.replace('/', '\\');
+        let fileUrl = new URL('file://' + action.dir);
+        let path = fileUrl.toString();
 
-        if( songs.find((value) => {return value.id === fileName}) === undefined ){
+        if( songs.find((value) => {return value.id === path}) === undefined ){
             songs = songs.push(Object.assign({}, Song, {
-                id: action.dir.replace('/', '\\'),
-                title: safeVal(action.info.common.title, fileName.slice(fileName.lastIndexOf('\\') + 1, fileName.lastIndexOf('.'))),
+                id: path,
+                title: safeVal(action.info.common.title, decodeURI(path).slice(decodeURI(path).lastIndexOf('/') + 1, decodeURI(path).lastIndexOf('.'))),
                 artist: safeVal(action.info.common.artists, "Unknown Artist"),
                 albumArtist: safeVal(action.info.common.albumartist, safeVal(action.info.common.artists, "Unknown Artist")),
                 album: safeVal(action.info.common.album, "Unknown Album"),
                 year: safeVal(action.info.common.year, NaN),
                 genre: safeVal(action.info.common.genre, ""),
                 duration: action.info.format.duration,
-                cover: safeImg(action.info.common.picture, fileName),
+                cover: safeImg(action.info.common.picture, path),
                 coverType: safeVal(action.info.common.picture[0].format, ""),
                 trackNum: safeVal(action.info.common.track.no, NaN),
                 diskNum: safeVal(action.info.common.disk.no, NaN)
@@ -105,6 +107,7 @@ class SongStore extends ReduceStore{
     createAlbum(state, action){
         let albums = Immutable.List(window.eStore.get('albums'));
         let tempIndex = albums.findIndex((value) => {return value.name === safeVal(action.info.common.album, "Unknown Album")});
+        let tempUrl = new URL('file://' + action.dir);
 
         if(tempIndex === -1){
             albums = albums.push(Object.assign({}, Album, {
@@ -112,7 +115,7 @@ class SongStore extends ReduceStore{
                 year: safeVal(action.info.common.year, NaN),
                 artist: safeVal(action.info.common.albumartist, safeVal(action.info.common.artists, "Unknown Artist")),
                 genre: safeVal(action.info.common.genre, ""),
-                cover: (action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(action.dir.replace('/', '\\')) + '.' + action.info.common.picture[0].format.slice(action.info.common.picture[0].format.indexOf('/') + 1))
+                cover: (action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(tempUrl.toString()) + '.' + action.info.common.picture[0].format.slice(action.info.common.picture[0].format.indexOf('/') + 1))
             }));
             ipcRenderer.sendSync('synchronous-message', {msg: 'addAlbum', data: albums.toArray()});
         }
@@ -123,7 +126,7 @@ class SongStore extends ReduceStore{
                     year: safeVal(action.info.common.year, NaN),
                     artist: safeVal(action.info.common.albumartist, safeVal(action.info.common.artists, "Unknown Artist")),
                     genre: safeVal(action.info.common.genre, ""),
-                    cover: (action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(action.dir.replace('/', '\\')) + '.' + action.info.common.picture[0].format.slice(action.info.common.picture[0].format.indexOf('/') + 1))
+                    cover: (action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(tempUrl.toString()) + '.' + action.info.common.picture[0].format.slice(action.info.common.picture[0].format.indexOf('/') + 1))
                 }));
                 ipcRenderer.sendSync('synchronous-message', {msg: 'addAlbum', data: albums.toArray()});
             }
