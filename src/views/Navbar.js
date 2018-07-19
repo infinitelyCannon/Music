@@ -59,7 +59,6 @@ class Navbar extends React.Component{
                 <VelocityComponent animation={drawerAnimation} duration={250}>
                     <div className="drawer">
                         <p>Hello World!</p>
-                        <button onClick={this.props.addMusic}>Add Folder(s)</button>
                     </div>
                 </VelocityComponent>
                 <VelocityTransitionGroup enter={overlayEntry} leave={overlayExit} duration={250}>
@@ -84,6 +83,7 @@ class Navbar extends React.Component{
                             </span>
                         </a>
                         <h4 className="title is-4">Music App</h4>
+                        <button onClick={this.props.addMusic}>Add Folder(s)</button>
                     </div>
                     <div className="navbar-end">
                         <div className="navbar-item">

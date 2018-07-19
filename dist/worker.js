@@ -1,4 +1,5 @@
 const fs = require('fs');
+const music = require('music-metadata');
 
 onmessage = main;
 

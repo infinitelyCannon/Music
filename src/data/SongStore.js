@@ -6,8 +6,6 @@ import MusicDispatcher from './MusicDispatcher';
 import ActionTypes from './ActionTypes';
 import _ from 'underscore';
 import {ipcRenderer} from 'electron';
-import {spawn} from 'child_process';
-import fs from 'fs';
 import hash from 'hash-sum';
 import {URL} from 'url';
 
@@ -24,15 +22,12 @@ function safeVal(value, fallback){
 }
 
 function safeImg(data, name){
-    let webp, path;
-
     if(data === undefined || data.length === 0){
         return 'dist/blankCover.png';
     }
 
-    path = window.dataPath + '/img/' + hash(name) + '.' + data[0].format.slice(data[0].format.indexOf('/') + 1);
-
-    fs.writeFileSync(path, data[0].data);/*, (err) => {
+    //fs.writeFileSync(path, data[0].data);
+    /*, (err) => {
         if(err) throw err;
         webp = spawn('./lib/webp/cwebp.exe', [path, '-o', window.dataPath + '/img/' + hash(name) + '.webp']);
         webp.stdout.on('data', (data) => {
@@ -48,7 +43,7 @@ function safeImg(data, name){
     });
     */
 
-    return path;
+    return window.dataPath + '/img/' + hash(name) + '.webp';
 }
 
 class SongStore extends ReduceStore{
@@ -115,7 +110,7 @@ class SongStore extends ReduceStore{
                 year: safeVal(action.info.common.year, NaN),
                 artist: safeVal(action.info.common.albumartist, safeVal(action.info.common.artists, "Unknown Artist")),
                 genre: safeVal(action.info.common.genre, ""),
-                cover: (action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(tempUrl.toString()) + '.' + action.info.common.picture[0].format.slice(action.info.common.picture[0].format.indexOf('/') + 1))
+                cover: safeImg(action.info.common.picture, tempUrl.toString())/*(action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(tempUrl.toString()) + '.' + action.info.common.picture[0].format.slice(action.info.common.picture[0].format.indexOf('/') + 1))*/
             }));
             ipcRenderer.sendSync('synchronous-message', {msg: 'addAlbum', data: albums.toArray()});
         }
@@ -126,7 +121,7 @@ class SongStore extends ReduceStore{
                     year: safeVal(action.info.common.year, NaN),
                     artist: safeVal(action.info.common.albumartist, safeVal(action.info.common.artists, "Unknown Artist")),
                     genre: safeVal(action.info.common.genre, ""),
-                    cover: (action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(tempUrl.toString()) + '.' + action.info.common.picture[0].format.slice(action.info.common.picture[0].format.indexOf('/') + 1))
+                    cover: safeImg(action.info.common.picture, tempUrl.toString())/*(action.info.common.picture === undefined ? 'dist/blankCover.png' : window.dataPath + '/img/' + hash(tempUrl.toString()) + '.' + action.info.common.picture[0].format.slice(action.info.common.picture[0].format.indexOf('/') + 1))*/
                 }));
                 ipcRenderer.sendSync('synchronous-message', {msg: 'addAlbum', data: albums.toArray()});
             }
