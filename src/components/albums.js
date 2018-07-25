@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 const Albums = ({music, onNameClick, route}) => {
     return (
-        _.sortBy(music, (item) => {return item[route.view]}).map((card) => (
+        _.sortBy(music, (item) => {return item[route.sort.type]}).map((card) => (
             <div key={card.title + '_' + card.artist} className="card">
                 <div className="card-image">
                     <figure className="image is-1by1">

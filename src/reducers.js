@@ -119,6 +119,9 @@ function albums(state = initialState.albums, action){
                                     dateAdded: 0
                                 }
                             }
+                            else{
+                                return item;
+                            }
                         })
                         /* albums.push(Object.assign({}, {
                             title: safeVal(action.data[i].common.album, "Unknown Album"),
