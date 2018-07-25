@@ -1,7 +1,22 @@
 const fs = require('fs');
 const music = require('music-metadata');
+const {URL} = require('url');
+const hash = require('hash-sum');
 
 onmessage = main;
+var output = [];
+var outLen = 0;
+var fileNames = [];
+
+function addMeta(item, doesExist){
+    item.common.picture = doesExist;
+    output.push(item);
+    outLen++;
+
+    if(outLen >= fileNames.length){
+        postMessage(output);
+    }
+}
 
 function mainHelper(dir){
     var items = fs.readdirSync(dir);
@@ -29,7 +44,7 @@ function mainHelper(dir){
                 case 'asf':
                 case 'm4a':
                 case 'oga':
-                    postMessage(file);
+                    fileNames.push(file);
                     break;
                 default:
                     break;
@@ -39,9 +54,28 @@ function mainHelper(dir){
 }
 
 function main(e){
-    for(var i = 0; i < e.data.length; i++){
-        mainHelper(e.data[i]);
+    for(let i = 0; i < e.data[0].length; i++){
+        mainHelper(e.data[0][i]);
     }
 
-    postMessage(0);
+    for(let j = 0; j < fileNames.length; j++){
+        music.parseFile(fileNames[j])
+        .then((metadata) => {
+            var path = new URL('file://' + fileNames[j]);
+            if(metadata.common.picture != undefined){
+                fs.writeFileSync(
+                    e.data[1] + 
+                    '/img/' +
+                    hash(path.toString()) +
+                    '.' +
+                    metadata.common.picture[0].format.slice(metadata.common.picture[0].format.indexOf('/') + 1), metadata.common.picture[0].data);
+                addMeta(Object.assign({}, metadata, {fileName: path.toString()}), true);
+            }
+            else{
+                addMeta(Object.assign({}, metadata, {fileName: path.toString()}), false);
+            }
+        })
+    }
+
+    //postMessage(0);
 }

@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain} = require('electron');
+const {app, BrowserWindow, ipcMain, globalShortcut} = require('electron');
 const {default: installExtension, REACT_DEVELOPER_TOOLS} = require('electron-devtools-installer');
 const Store = require('electron-store');
 const fs = require('fs');
@@ -14,8 +14,7 @@ function createWindow(){
     win = new BrowserWindow({
         width: 900,
         height: 800,
-        webPreferences: {nodeIntegrationInWorker: true},
-        frame: false
+        webPreferences: {nodeIntegrationInWorker: true}
     });
 
     win.loadFile('index.html');
@@ -30,20 +29,43 @@ function createWindow(){
 
     win.webContents.openDevTools();
 
-    win.on('maximize', () =>{
-        win.webContents.send('maxed', true);
-    });
-
-    win.on('unmaximize', () => {
-        win.webContents.send('maxed', false);
-    });
-
     win.on('closed', () => {
         win = null;
     });
 }
 
-app.on('ready', createWindow);
+app.on('ready', () => {
+    /*For later
+    const play = globalShortcut.register('MediaPlayPause', () => {
+        console.log("PlayPaused Triggered.");
+    });
+
+    const skip = globalShortcut.register('MediaNextTrack', () => {
+        console.log("MediaSkip Triggered.");
+    });
+
+    const prev = globalShortcut.register('MediaPreviousTrack', () => {
+        console.log("MediaPrev Triggered.");
+    });
+
+    if(!play || !skip || !prev){
+        console.log("Registration failed.");
+    }
+
+    console.log(globalShortcut.isRegistered('MediaPlayPause'));
+*/
+    createWindow();
+});
+
+app.on('window-all-closed', () => {
+    if(process.platform !== 'darwin'){
+        app.quit();
+    }
+});
+
+app.on('will-quit', () => {
+    globalShortcut.unregisterAll();
+});
 
 ipcMain.on('asynchronous-message', (event, arg) => {
     if(arg === 'exit'){

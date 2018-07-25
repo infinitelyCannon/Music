@@ -1,34 +1,52 @@
 import React from 'react';
-import {ipcRenderer} from 'electron';
 import VelocityComponent from 'velocity-react/velocity-component';
 import VelocityTransitionGroup from 'velocity-react/velocity-transition-group';
-
 
 class Navbar extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            isMaxed: false,
-            isDrawerOpen: false
+            isDrawerOpen: false,
+            worker: null
         };
-        ipcRenderer.on('maxed', (event, message) =>{
-            this.setState({isMaxed: message});
+        this.handleGenre = this.handleGenre.bind(this);
+        this.handleSort = this.handleSort.bind(this);
+    }
+
+    handleGenre(e){
+        this.props.onNavClick("filter", e.target.value);
+    }
+
+    handleSort(e){
+        this.props.onNavClick("sort", {type: e.target.value, ascend: true});
+    }
+
+    scanFiles(paths){
+        if(this.state.worker === null){
+            this.setState({worker: new Worker('./dist/worker.js')});
+            this.state.worker.onmessage = function(e){
+                this.props.importFolders(e.data);
+                this.state.worker.terminate();
+                this.setState({worker: null});
+            }.bind(this);
+            this.state.worker.postMessage([paths, window.dataPath]);
+        }
+    }
+
+    openFolders(){
+        window.dialog.showOpenDialog({
+            title: "Select your folder(s)",
+            properties: ["openDirectory"]
+        }, (folderPaths) => {
+            if(folderPaths === undefined){
+                console.info("No destination folder selected");
+                return;
+            }
+            else{
+                this.scanFiles(folderPaths);
+                return;
+            }
         });
-        this.handleMini = this.handleMini.bind(this);
-        this.handleMax = this.handleMax.bind(this);
-        this.handleClose = this.handleClose.bind(this);
-    }
-
-    handleMini(){
-        ipcRenderer.send('asynchronous-message', 'mini');
-    }
-
-    handleMax(){
-        this.setState({isMaxed: ipcRenderer.sendSync('synchronous-message', 'max')});
-    }
-
-    handleClose(){
-        ipcRenderer.send('asynchronous-message', 'exit');
     }
 
     render(){
@@ -55,7 +73,7 @@ class Navbar extends React.Component{
         }
 
         return (
-            <nav className="navbar is-fixed-top" role="navigation">
+            <nav className="navbar is-fixed-top">
                 <VelocityComponent animation={drawerAnimation} duration={250}>
                     <div className="drawer">
                         <p>Hello World!</p>
@@ -64,17 +82,6 @@ class Navbar extends React.Component{
                 <VelocityTransitionGroup enter={overlayEntry} leave={overlayExit} duration={250}>
                     {this.state.isDrawerOpen ? <div id="overlay" onClick={() => this.setState({isDrawerOpen: !this.state.isDrawerOpen})}></div> : undefined}
                 </VelocityTransitionGroup>
-                <div id="window-bar">
-                    <a id="min" className="icon is-medium" onClick={this.handleMini}>
-                        <i className="mdi mdi-18px mdi-minus"></i>
-                    </a>
-                    <a id="max" className="icon is-medium" onClick={this.handleMax}>
-                        <i className={"mdi mdi-18px " + (this.state.isMaxed ? "mdi-window-restore" : "mdi-square-outline")}></i>
-                    </a>
-                    <a id="close" className="icon is-medium" onClick={this.handleClose}>
-                        <i className="mdi mdi-18px mdi-close"></i>
-                    </a>
-                </div>
                 <div className="navbar-brand">
                     <div className="navbar-start">
                         <a className="button" onClick={() => this.setState({isDrawerOpen: !this.state.isDrawerOpen})}>
@@ -83,7 +90,7 @@ class Navbar extends React.Component{
                             </span>
                         </a>
                         <h4 className="title is-4">Music App</h4>
-                        <button onClick={this.props.addMusic}>Add Folder(s)</button>
+                        <button onClick={() => this.openFolders()}>Add Folder(s)</button>
                     </div>
                     <div className="navbar-end">
                         <div className="navbar-item">
@@ -98,43 +105,41 @@ class Navbar extends React.Component{
                 </div>
                 <div className="tabs">
                     <ul>
-                        <li className={this.props.music.route[0].indexOf('Album') != -1 ? "is-active" : ""}>
-                            <a onClick={() => this.props.navigate("allAlbums", this.props.music.route[1], this.props.music.route[2])}>Albums</a>
+                        <li className={this.props.route.view === "albums" ? "is-active" : ""}>
+                            <a onClick={() => this.props.onNavClick("view", "albums")}>Albums</a>
                         </li>
-                        <li className={this.props.music.route[0].indexOf('song') != -1 ? "is-active" : ""}>
-                            <a onClick={() => this.props.navigate("songs", this.props.music.route[1], this.props.music.route[2])}>Songs</a>
+                        <li className={this.props.route.view === "songs" ? "is-active" : ""}>
+                            <a onClick={() => this.props.onNavClick("view", "songs")}>Songs</a>
                         </li>
-                        <li className={this.props.music.route[0].indexOf('artist') != -1 ? "is-active" : ""}>
-                            <a onClick={() => this.props.navigate("artists", this.props.music.route[1], this.props.music.route[2])}>Artists</a>
+                        <li className={this.props.route.view === "artists" ? "is-active" : ""}>
+                            <a onClick={() => this.props.onNavClick("view", "artists")}>Artists</a>
                         </li>
-                        <li className={this.props.music.route[0].indexOf('playlist') != -1 ? "is-active" : ""}>
-                            <a onClick={() => this.props.navigate("playlists", this.props.music.route[1], this.props.music.route[2])}>Playlists</a>
+                        <li className={this.props.route.view === "playlists" ? "is-active" : ""}>
+                            <a onClick={() => this.props.onNavClick("view", "playlists")}>Playlists</a>
                         </li>
                         <li style={{borderLeft: '1px solid #ddd',margin: '0 5px',padding: '0 5px'}}>
                             <span>Genres: </span>
                             <div className="select is-small">
-                                <select>
+                                <select onChange={(e) => this.handleGenre(e)}>
                                     <option>All</option>
-                                    <option>Blues</option>
-                                    <option>Country</option>
-                                    <option>Electronic</option>
-                                    <option>Electro Swing</option>
-                                    <option>Funk</option>
-                                    <option>Hip-Hop</option>
-                                    <option>Jazz</option>
-                                    <option>Rock</option>
-                                    <option>R&amp;B</option>
+                                    {
+                                        this.props.genres.map((item) => {
+                                            if(item != "All"){
+                                                return <option key={item}>{item}</option>
+                                            }
+                                        })
+                                    }
                                 </select>
                             </div>
                         </li>
                         <li style={{borderLeft: '1px solid #ddd',margin: '0 5px',padding: '0 5px'}}>
                             <span>Sort by: </span>
                             <div className="select is-small">
-                                <select>
-                                    <option>Alphabetical</option>
-                                    <option>Date Added</option>
-                                    <option>Release year</option>
-                                    <option>Artist</option>
+                                <select onChange={(e) => this.handleSort(e)}>
+                                    <option value="title">Alphabetical</option>
+                                    <option value="dateAdded">Date Added</option>
+                                    <option value="year">Release year</option>
+                                    <option value="artist">Artist</option>
                                 </select>
                             </div>
                         </li>

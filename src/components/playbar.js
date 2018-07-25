@@ -1,6 +1,6 @@
 import React from 'react';
 
-class BottomNav extends React.Component{
+class PlayBar extends React.Component{
     constructor(props){
         super(props);
     }
@@ -89,4 +89,4 @@ class BottomNav extends React.Component{
     }
 }
 
-export default BottomNav;
+export default PlayBar;
