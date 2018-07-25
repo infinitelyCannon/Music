@@ -35,7 +35,7 @@ export function scanDirectories(dirs){
 
         return window.imagemin.convert([window.dataPath + '/img/*.{jpg,png,jpeg}'], window.dataPath + '/img', {
             use: [
-                window.imagemin.plugin({quality: 85})
+                window.imagemin.plugin(/*{quality: 85}*/)
             ]
         })
         .then(() => {

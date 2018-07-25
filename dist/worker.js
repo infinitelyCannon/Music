@@ -69,10 +69,15 @@ function main(e){
                     hash(path.toString()) +
                     '.' +
                     metadata.common.picture[0].format.slice(metadata.common.picture[0].format.indexOf('/') + 1), metadata.common.picture[0].data);
-                addMeta(Object.assign({}, metadata, {fileName: path.toString()}), true);
+                addMeta(Object.assign({}, metadata, {
+                    fileName: path.toString(),
+                    name: fileNames[j].slice(fileNames[j].lastIndexOf('/') + 1, fileNames[j].lastIndexOf('.'))
+                }), true);
             }
             else{
-                addMeta(Object.assign({}, metadata, {fileName: path.toString()}), false);
+                addMeta(Object.assign({}, metadata, {
+                    fileName: path.toString(),
+                    name: fileNames[j].slice(fileNames[j].lastIndexOf('/') + 1, fileNames[j].lastIndexOf('.'))}), false);
             }
         })
     }

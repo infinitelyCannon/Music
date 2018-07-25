@@ -67,8 +67,8 @@ function songs(state = initialState.songs, action){
             for(let i = 0; i < action.data.length; i++){
                 toMerge.push({
                     id: action.data[i].fileName,
-                    title: safeVal(action.data[i].common.title, decodeURI(action.data[i].fileName).slice(decodeURI(action.data[i].fileName).lastIndexOf('/') + 1, decodeURI(action.data[i].fileName).lastIndexOf('.'))),
-                    artist: safeVal(action.data[i].common.artist, "Unknown Artist"),
+                    title: safeVal(action.data[i].common.title, action.data[i].name),
+                    artist: safeVal(action.data[i].common.artists, "Unknown Artist"),
                     albumArtist: safeVal(action.data[i].common.albumartist, "Unknown Artist"),
                     album: safeVal(action.data[i].common.album, "Unknown Album"),
                     year: safeVal(action.data[i].common.year, NaN),
@@ -95,7 +95,7 @@ function albums(state = initialState.albums, action){
             let albums = [];
             //let oldState = state;
             for(let i = 0; i < action.data.length; i++){
-                let tempIndex = _.find(state, (item) => {return item.title === safeVal(action.data[i].album, "Unknown Album")});
+                let tempIndex = _.find(albums, (item) => {return item.title === safeVal(action.data[i].common.album, "Unknown Album")});
                 if(tempIndex === undefined){
                     albums.push(Object.assign({}, {
                         title: safeVal(action.data[i].common.album, "Unknown Album"),
@@ -107,9 +107,9 @@ function albums(state = initialState.albums, action){
                     }));
                 }
                 else{
-                    if(action.data[i].track.no === 1){
-                        _.map(albums, (item) => {
-                            if(_.isEqual(item, tempIndex)){
+                    if(action.data[i].common.track.no === 1){
+                        albums = _.map(albums, (item) => {
+                            if(item.title === safeVal(action.data[i].common.album, "Unknown Album")){
                                 return {
                                     title: safeVal(action.data[i].common.album, "Unknown Album"),
                                     year: safeVal(action.data[i].common.year, NaN),
@@ -132,7 +132,7 @@ function albums(state = initialState.albums, action){
                     //oldState = _.without(oldState, tempIndex);
                 }
             }
-            return _.unionBy(state, albums, "title");
+            return _.unionBy(albums, state, "title");
         default:
             return state;
     }
