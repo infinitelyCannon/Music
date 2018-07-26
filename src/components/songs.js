@@ -3,6 +3,11 @@ import _ from 'lodash';
 
 function sorting(values, parms){
     var stageOne = _.sortBy(values, (item) => {return item[parms.sort.type]});
+
+    if(parms.filter != "All"){
+        stageOne = _.filter(stageOne, {genre: parms.filter});
+    }
+     
     return () => {
         if(!parms.sort.ascend){
             return _.reverse(stageOne);

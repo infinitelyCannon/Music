@@ -102,8 +102,7 @@ function albums(state = initialState.albums, action){
                         year: safeVal(action.data[i].common.year, NaN),
                         artist: safeVal(action.data[i].common.albumartist, safeVal(action.data[i].common.artist, "Unknown Artist")),
                         genre: safeVal(action.data[i].common.genre, ""),
-                        cover: safeImg(action.data[i].common.picture, action.data[i].fileName),
-                        dateAdded: 0
+                        cover: safeImg(action.data[i].common.picture, action.data[i].fileName)
                     }));
                 }
                 else{
@@ -115,24 +114,14 @@ function albums(state = initialState.albums, action){
                                     year: safeVal(action.data[i].common.year, NaN),
                                     artist: safeVal(action.data[i].common.albumartist, safeVal(action.data[i].common.artist, "Unknown Artist")),
                                     genre: safeVal(action.data[i].common.genre, ""),
-                                    cover: safeImg(action.data[i].common.picture, action.data[i].fileName),
-                                    dateAdded: 0
+                                    cover: safeImg(action.data[i].common.picture, action.data[i].fileName)
                                 }
                             }
                             else{
                                 return item;
                             }
-                        })
-                        /* albums.push(Object.assign({}, {
-                            title: safeVal(action.data[i].common.album, "Unknown Album"),
-                            year: safeVal(action.data[i].common.year, NaN),
-                            artist: safeVal(action.data[i].common.albumartist, safeVal(action.data[i].common.artist, "Unknown Artist")),
-                            genre: safeVal(action.data[i].common.genre, ""),
-                            cover: safeImg(action.data[i].common.picture, action.data[i].fileName),
-                            dateAdded: 0
-                        })); */
+                        });
                     }
-                    //oldState = _.without(oldState, tempIndex);
                 }
             }
             return _.unionBy(albums, state, "title");

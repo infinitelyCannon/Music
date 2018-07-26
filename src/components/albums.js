@@ -1,9 +1,26 @@
 import React from 'react';
 import _ from 'lodash';
 
+function sorting(values, params){
+    var stageOne = _.sortBy(values, (item) => {return item[params.sort.type]});
+
+    if(params.filter != "All"){
+        stageOne = _.filter(stageOne, {genre: params.filter});
+    }
+
+    return () => {
+        if(!params.sort.ascend){
+            return _.reverse(stageOne);
+        }
+        else{
+            return stageOne;
+        }
+    }
+}
+
 const Albums = ({music, onNameClick, route}) => {
     return (
-        _.sortBy(music, (item) => {return item[route.sort.type]}).map((card) => (
+        _.map(sorting(music, route)(), (card) => (
             <div key={card.title + '_' + card.artist} className="card">
                 <div className="card-image">
                     <figure className="image is-1by1">

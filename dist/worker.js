@@ -63,12 +63,12 @@ function main(e){
         .then((metadata) => {
             var path = new URL('file://' + fileNames[j]);
             if(metadata.common.picture != undefined){
-                /*fs.writeFileSync(
+                fs.writeFileSync(
                     e.data[1] + 
                     '/img/' +
                     hash(path.toString()) +
                     '.' +
-                    metadata.common.picture[0].format.slice(metadata.common.picture[0].format.indexOf('/') + 1), metadata.common.picture[0].data);*/
+                    metadata.common.picture[0].format.slice(metadata.common.picture[0].format.indexOf('/') + 1), metadata.common.picture[0].data);
                 addMeta(Object.assign({}, metadata, {
                     fileName: path.toString(),
                     name: fileNames[j].slice(fileNames[j].lastIndexOf('/') + 1, fileNames[j].lastIndexOf('.'))
@@ -77,7 +77,8 @@ function main(e){
             else{
                 addMeta(Object.assign({}, metadata, {
                     fileName: path.toString(),
-                    name: fileNames[j].slice(fileNames[j].lastIndexOf('/') + 1, fileNames[j].lastIndexOf('.'))}), false);
+                    name: fileNames[j].slice(fileNames[j].lastIndexOf('/') + 1, fileNames[j].lastIndexOf('.'))
+                }), false);
             }
         })
     }
