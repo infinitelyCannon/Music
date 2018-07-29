@@ -62,17 +62,19 @@ function main(e){
         music.parseFile(fileNames[j], {duration: true})
         .then((metadata) => {
             var path = new URL('file://' + fileNames[j]);
+            var photoHash;
             if(metadata.common.picture != undefined){
+                photoHash = hash(metadata.common.picture[0].data);
                 fs.writeFileSync(
                     e.data[1] + 
                     '/img/' +
-                    hash(path.toString()) +
+                    photoHash +
                     '.' +
                     metadata.common.picture[0].format.slice(metadata.common.picture[0].format.indexOf('/') + 1), metadata.common.picture[0].data);
                 addMeta(Object.assign({}, metadata, {
                     fileName: path.toString(),
                     name: fileNames[j].slice(fileNames[j].lastIndexOf('/') + 1, fileNames[j].lastIndexOf('.'))
-                }), metadata.common.picture[0].format.slice(metadata.common.picture[0].format.indexOf('/') + 1));
+                }), {type: metadata.common.picture[0].format.slice(metadata.common.picture[0].format.indexOf('/') + 1), id: photoHash});
             }
             else{
                 addMeta(Object.assign({}, metadata, {

@@ -13,8 +13,8 @@ const initialState = {
     genres: ["All"]
 };
 
-function safeImg(data, name){
-    return (data != undefined ? window.dataPath + '/img/' + hash(name) + '.' + data : 'dist/blankCover.png');
+function safeImg(data){
+    return (data != undefined ? window.dataPath + '/img/' + data.id + '.' + data.type : 'dist/blankCover.png');
 }
 
 function safeVal(value, fallback){
@@ -75,7 +75,7 @@ function songs(state = initialState.songs, action){
                     year: safeVal(action.data[i].common.year, NaN),
                     genre: safeVal(action.data[i].common.genre, ""),
                     duration: action.data[i].format.duration,
-                    cover: safeImg(action.data[i].common.picture, action.data[i].fileName),
+                    cover: safeImg(action.data[i].common.picture),
                     trackNum: safeVal(action.data[i].common.track, NaN),
                     diskNum: safeVal(action.data[i].common.disk, NaN),
                     playcount: 0,
@@ -103,7 +103,7 @@ function albums(state = initialState.albums, action){
                         year: safeVal(action.data[i].common.year, NaN),
                         artist: safeVal(action.data[i].common.albumartist, safeVal(action.data[i].common.artist, "Unknown Artist")),
                         genre: safeVal(action.data[i].common.genre, ""),
-                        cover: safeImg(action.data[i].common.picture, action.data[i].fileName)
+                        cover: safeImg(action.data[i].common.picture)
                     }));
                 }
                 else{
@@ -115,7 +115,7 @@ function albums(state = initialState.albums, action){
                                     year: safeVal(action.data[i].common.year, NaN),
                                     artist: safeVal(action.data[i].common.albumartist, safeVal(action.data[i].common.artist, "Unknown Artist")),
                                     genre: safeVal(action.data[i].common.genre, ""),
-                                    cover: safeImg(action.data[i].common.picture, action.data[i].fileName)
+                                    cover: safeImg(action.data[i].common.picture)
                                 }
                             }
                             else{
