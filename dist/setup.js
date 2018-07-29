@@ -6,7 +6,8 @@ window.dialog = remote.dialog;
 window.eStore = new Store();
 window.imagemin = {
     convert: require('imagemin'),
-    plugin: require('imagemin-webp')
+    jpeg: require('imagemin-jpegtran'),
+    png: require('imagemin-pngquant')
 };
 
 require('electron').ipcRenderer.on('path', (event, message) => {
@@ -29,7 +30,7 @@ document.addEventListener('dragover', function(e){
 });
 
 function read(place){
-    mm.parseFile(place, {native: true, mergeTagHeaders: true})
+    mm.parseFile(place, {native: true, duration: true})
         .then(function(metadata){
             pic = metadata;
             console.log(metadata);

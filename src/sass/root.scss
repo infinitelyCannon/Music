@@ -158,9 +158,20 @@ li{
 }
 
 .media-content{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    /*
     .title{
         white-space: nowrap;
+        text-overflow: ellipsis;
     }
+    .subtitle{
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    */
 }
 
 ::-webkit-scrollbar{

@@ -1,7 +1,3 @@
-/* import imagemin from 'imagemin';
-import imageminWebp from 'imagemin-webp'; */
-const fs = require('fs');
-
 export const ADD_SONGS = "ADD_SONGS";
 export const NAVIGATE_UI = "NAVIGATE_UI";
 export const SCAN_DIRECTORIES = "SCAN_DIRECTORIES";
@@ -35,29 +31,9 @@ export function scanDirectories(dirs){
 
         return window.imagemin.convert([window.dataPath + '/img/*.{jpg,png,jpeg}'], window.dataPath + '/img', {
             use: [
-                window.imagemin.plugin(/*{quality: 85}*/)
+                window.imagemin.jpeg(),
+                window.imagemin.png()
             ]
-        })
-        .then(() => {
-            let items = fs.readdirSync(window.dataPath + '/img');
-            let stat;
-
-            for(let i = 0; i < items.length; i++){
-                var pic = window.dataPath + '/img/' + items[i];
-
-                stat = fs.statSync(pic);
-                if(stat.isFile()){
-                    switch(pic.slice(pic.lastIndexOf('.') + 1, pic.length)){
-                        case 'png':
-                        case 'jpg':
-                        case 'jpeg':
-                            fs.unlink(pic, (err) => {if(err)console.warn(err.message)});
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
         })
         .then(() => dispatch(additionReady(dirs)));
     }

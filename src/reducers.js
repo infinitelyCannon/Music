@@ -14,12 +14,7 @@ const initialState = {
 };
 
 function safeImg(data, name){
-    if(data){
-        return window.dataPath + '/img/' + hash(name) + '.webp';
-    }
-    else{
-        return 'dist/blankCover.png';
-    }
+    return (data != undefined ? window.dataPath + '/img/' + hash(name) + '.' + data : 'dist/blankCover.png');
 }
 
 function safeVal(value, fallback){
@@ -28,6 +23,9 @@ function safeVal(value, fallback){
     }
     if(typeof value === 'object' && value.length != undefined){
         return _.uniq(value).toString().replace(',', ', ');
+    }
+    if(typeof value === 'string'){
+        return value.trim();
     }
     else{
         return value;
@@ -65,6 +63,9 @@ function songs(state = initialState.songs, action){
             return "pending";
         case ADDITION_READY:
             for(let i = 0; i < action.data.length; i++){
+                if(action.data[i].format.duration === undefined){
+                    console.warn(action.data[i]);
+                }
                 toMerge.push({
                     id: action.data[i].fileName,
                     title: safeVal(action.data[i].common.title, action.data[i].name),

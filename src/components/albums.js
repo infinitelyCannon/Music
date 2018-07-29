@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 
 function sorting(values, params){
-    var stageOne = _.sortBy(values, (item) => {return item[params.sort.type]});
+    var stageOne = _.sortBy(values, (item) => {return item[params.sort.type].toLowerCase()});
 
     if(params.filter != "All"){
         stageOne = _.filter(stageOne, {genre: params.filter});

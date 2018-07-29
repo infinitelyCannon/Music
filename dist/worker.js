@@ -59,7 +59,7 @@ function main(e){
     }
 
     for(let j = 0; j < fileNames.length; j++){
-        music.parseFile(fileNames[j])
+        music.parseFile(fileNames[j], {duration: true})
         .then((metadata) => {
             var path = new URL('file://' + fileNames[j]);
             if(metadata.common.picture != undefined){
@@ -72,13 +72,13 @@ function main(e){
                 addMeta(Object.assign({}, metadata, {
                     fileName: path.toString(),
                     name: fileNames[j].slice(fileNames[j].lastIndexOf('/') + 1, fileNames[j].lastIndexOf('.'))
-                }), true);
+                }), metadata.common.picture[0].format.slice(metadata.common.picture[0].format.indexOf('/') + 1));
             }
             else{
                 addMeta(Object.assign({}, metadata, {
                     fileName: path.toString(),
                     name: fileNames[j].slice(fileNames[j].lastIndexOf('/') + 1, fileNames[j].lastIndexOf('.'))
-                }), false);
+                }), undefined);
             }
         })
     }

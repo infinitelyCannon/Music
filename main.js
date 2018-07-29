@@ -74,6 +74,12 @@ ipcMain.on('asynchronous-message', (event, arg) => {
     if(arg === 'mini'){
         win.minimize();
     }
+    else{
+        eStore.set('songs', arg.songs);
+        eStore.set('albums', arg.albums);
+        eStore.set('genres', arg.genres);
+        eStore.set('route', arg.route);
+    }
 });
 
 ipcMain.on('synchronous-message', (event, arg) =>{
