@@ -8,11 +8,17 @@
     }
 }
 
+body.is-tabbed #container{
+    height: calc(100vh - (93px + 92px));
+    border: none;
+}
+
 #container{
+    border-top: 1px solid #dbdbdb;
     display: flex;
     flex-wrap: wrap;
     width: 100vw;
-    height: calc(100vh - (93px + 92px));
+    height: calc(100vh - (52px + 92px));
     align-content: flex-start;
     padding: 0px 25px 45px 20px;
     overflow-y: scroll;
@@ -162,16 +168,6 @@ li{
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
-    /*
-    .title{
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
-    .subtitle{
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
-    */
 }
 
 ::-webkit-scrollbar{
@@ -182,6 +178,11 @@ li{
 }
 ::-webkit-scrollbar-thumb{
     background: #888;
+}
+
+.message{
+    flex-basis: 100%;
+    margin: 0;
 }
 
 @import 'bulma/bulma';

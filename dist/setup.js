@@ -4,11 +4,6 @@ var remote = require('electron').remote;
 var pic;
 window.dialog = remote.dialog;
 window.eStore = new Store();
-window.imagemin = {
-    convert: require('imagemin'),
-    jpeg: require('imagemin-jpegtran'),
-    png: require('imagemin-pngquant')
-};
 
 require('electron').ipcRenderer.on('path', (event, message) => {
     window.dataPath = message;

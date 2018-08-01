@@ -3,16 +3,24 @@ import {ADD_SONGS, NAVIGATE_UI, SCAN_DIRECTORIES, ADDITION_FAILURE, ADDITION_REA
 import _ from 'lodash';
 import hash from 'hash-sum';
 const initialState = {
+    route: {view: "albums", sort: {type: "title", ascend: true}, filter: "All"},
+    songs: window.eStore.get('songs') || [],
+    albums: window.eStore.get('albums') || [],
+    genres: window.eStore.get('genres') || [],
+    artists: window.eStore.get('artists') || []
+};
+/*
+{
     route: {
-        view: "albums" /* songs | playlists | ${ALBUM-NAME_ARTIST-NAME} */,
-        sort: {type: "title", ascend: true} /* AlphaD | ArtistA | ArtistD */,
+        view: "albums",
+        sort: {type: "title", ascend: true},
         filter: "All"
     },
     songs: [],
     albums: [],
     genres: ["All"]
 };
-
+*/
 function safeImg(data){
     return (data != undefined ? window.dataPath + '/img/' + data.id + '.' + data.type : 'dist/blankCover.png');
 }
@@ -70,7 +78,7 @@ function songs(state = initialState.songs, action){
                     id: action.data[i].fileName,
                     title: safeVal(action.data[i].common.title, action.data[i].name),
                     artist: safeVal(action.data[i].common.artists, "Unknown Artist"),
-                    albumArtist: safeVal(action.data[i].common.albumartist, "Unknown Artist"),
+                    albumArtist: safeVal(action.data[i].common.albumartist, safeVal(action.data[i].common.artists, "Unknown Artist")),
                     album: safeVal(action.data[i].common.album, "Unknown Album"),
                     year: safeVal(action.data[i].common.year, NaN),
                     genre: safeVal(action.data[i].common.genre, ""),
@@ -101,7 +109,7 @@ function albums(state = initialState.albums, action){
                     albums.push(Object.assign({}, {
                         title: safeVal(action.data[i].common.album, "Unknown Album"),
                         year: safeVal(action.data[i].common.year, NaN),
-                        artist: safeVal(action.data[i].common.albumartist, safeVal(action.data[i].common.artist, "Unknown Artist")),
+                        artist: safeVal(action.data[i].common.albumartist, safeVal(action.data[i].common.artists, "Unknown Artist")),
                         genre: safeVal(action.data[i].common.genre, ""),
                         cover: safeImg(action.data[i].common.picture)
                     }));
@@ -113,7 +121,7 @@ function albums(state = initialState.albums, action){
                                 return {
                                     title: safeVal(action.data[i].common.album, "Unknown Album"),
                                     year: safeVal(action.data[i].common.year, NaN),
-                                    artist: safeVal(action.data[i].common.albumartist, safeVal(action.data[i].common.artist, "Unknown Artist")),
+                                    artist: safeVal(action.data[i].common.albumartist, safeVal(action.data[i].common.artists, "Unknown Artist")),
                                     genre: safeVal(action.data[i].common.genre, ""),
                                     cover: safeImg(action.data[i].common.picture)
                                 }
@@ -131,11 +139,27 @@ function albums(state = initialState.albums, action){
     }
 }
 
+function artists(state = initialState.artists, action){
+    switch(action.type){
+        case ADDITION_READY:
+            let result = _.map(action.data, (item) => {
+                return {
+                    name: safeVal(item.common.albumartist, safeVal(item.common.artists, "Unknown Artist")),
+                    photo: window.dataPath + '/img/' + hash(safeVal(item.common.albumartist, safeVal(item.common.artists, "Unknown Artist"))) + '.jpeg'
+                }
+            });
+            return _.unionBy(state, result, "name");
+        default:
+            return state;
+    }
+}
+
 const rootReducer = combineReducers({
     route: route,
     songs: songs,
     albums: albums,
-    genres: genres
+    genres: genres,
+    artists: artists
 });
 
 export default rootReducer;

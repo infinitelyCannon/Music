@@ -103,7 +103,7 @@ class Navbar extends React.Component{
                         </div>
                     </div>
                 </div>
-                <div className="tabs">
+                <div className="tabs" style={{display: (typeof this.props.route.view === "string" ? 'flex' : 'none')}}>
                     <ul>
                         <li className={this.props.route.view === "albums" ? "is-active" : ""}>
                             <a onClick={() => this.props.onNavClick("view", "albums")}>Albums</a>

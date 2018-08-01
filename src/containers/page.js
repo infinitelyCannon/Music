@@ -1,6 +1,6 @@
 import {connect} from 'react-redux';
 import Content from '../components/content';
-//import {} from '../actions';
+import {navigateUI} from '../actions';
 
 const mapStateToProps = state => {
     return {
@@ -11,7 +11,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onNameClick: (target, value) => console.log("Opening " + value)
+        onNameClick: (target, value) => dispatch(navigateUI(target, value))
     }
 };
 

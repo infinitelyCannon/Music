@@ -79,6 +79,7 @@ ipcMain.on('asynchronous-message', (event, arg) => {
         eStore.set('albums', arg.albums);
         eStore.set('genres', arg.genres);
         eStore.set('route', arg.route);
+        eStore.set('artists', arg.artists);
     }
 });
 

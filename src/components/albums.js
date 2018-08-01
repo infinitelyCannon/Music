@@ -2,7 +2,14 @@ import React from 'react';
 import _ from 'lodash';
 
 function sorting(values, params){
-    var stageOne = _.sortBy(values, (item) => {return item[params.sort.type].toLowerCase()});
+    var stageOne = _.sortBy(values, (item) => {
+        if(typeof item[params.sort.type] === 'string'){
+            return item[params.sort.type].toLowerCase().replace(/^a\s+|^the\s+/gi, '');
+        }
+        else{
+            return item[params.sort.type];
+        }
+    });
 
     if(params.filter != "All"){
         stageOne = _.filter(stageOne, {genre: params.filter});
@@ -30,7 +37,7 @@ const Albums = ({music, onNameClick, route}) => {
                 <div className="card-content">
                     <div className="media">
                         <div className="media-content">
-                            <a onClick={() => onNameClick("view", "#" + card.title + '_' + card.artist)} title={card.title} className="title is-5">{card.title}</a>
+                            <a onClick={() => onNameClick("view", {album: card.title, by: card.artist})} title={card.title} className="title is-5">{card.title}</a>
                             <br />
                             <a title={card.artist} className="subtitle is-6">{card.artist}</a>
                         </div>

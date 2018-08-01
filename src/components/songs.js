@@ -1,15 +1,22 @@
 import React from 'react';
 import _ from 'lodash';
 
-function sorting(values, parms){
-    var stageOne = _.sortBy(values, (item) => {return item[parms.sort.type].toLowerCase()});
+function sorting(values, params){
+    var stageOne = _.sortBy(values, (item) => {
+        if(typeof item[params.sort.type] === 'string'){
+            return item[params.sort.type].toLowerCase().replace(/^a\s+|^the\s+/gi, '');
+        }
+        else{
+            return item[params.sort.type];
+        }
+    });
 
-    if(parms.filter != "All"){
-        stageOne = _.filter(stageOne, {genre: parms.filter});
+    if(params.filter != "All"){
+        stageOne = _.filter(stageOne, {genre: params.filter});
     }
      
     return () => {
-        if(!parms.sort.ascend){
+        if(!params.sort.ascend){
             return _.reverse(stageOne);
         }
         else{

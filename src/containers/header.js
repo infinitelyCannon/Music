@@ -1,6 +1,6 @@
 import {connect} from 'react-redux';
 import Navbar from '../components/navbar';
-import {navigateUI, scanDirectories} from '../actions';
+import {navigateUI, additionReady} from '../actions';
 
 const mapStateToProps = state => {
     return {
@@ -15,7 +15,7 @@ const mapDispatchToProps = dispatch => {
             dispatch(navigateUI(tar, val));
         },
         importFolders: (data) => {
-            dispatch(scanDirectories(data));
+            dispatch(additionReady(data));
         }
     }
 };
