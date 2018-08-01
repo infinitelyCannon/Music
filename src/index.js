@@ -19,7 +19,7 @@ check to make sure that Ctrl+Shift+I doesn't activate the devTools
 const store = createStore(rootReducer);
 
 function persist(data){
-    if(data.route.view.by === undefined){
+    if(data.route.view.type === undefined){
         document.getElementById('pageBody').className = "has-navbar-fixed-bottom has-navbar-fixed-top is-tabbed";
     }
     else{

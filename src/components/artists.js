@@ -34,13 +34,13 @@ const Artists = ({music, onNameClick, route}) => {
                 </article>
                 :
                 <div key={item.name} className="card artist">
-                    <div className="card-image">
+                    <div className="card-image" onClick={() => onNameClick("view", {type: "artist", artist: item.name})}>
                         <figure className="image is-1by1">
                             <Img src={[item.photo, 'dist/person.png']} />
                         </figure>
                     </div>
                     <div className="card-content">
-                        <h4 className="title is-4">{item.name}</h4>
+                        <a onClick={() => onNameClick("view", {type: "artist", artist: item.name})} className="title is-4">{item.name}</a>
                     </div>
                 </div>
         ))
