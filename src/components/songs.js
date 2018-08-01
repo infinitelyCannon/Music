@@ -31,13 +31,13 @@ const Songs = ({music, route}) => {
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Artist</th>
-                    <th>Album</th>
                     <th>
                         <span className="icon is-medium">
                             <i className="mdi mdi-24px mdi-clock-outline"></i>
                         </span>
                     </th>
+                    <th>Artist</th>
+                    <th>Album</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,9 +45,9 @@ const Songs = ({music, route}) => {
                     _.map(sorting(music, route)(), (item) => (
                         <tr key={item.id}>
                             <td>{item.title}</td>
+                            <td>{item.duration.toTime()}</td>
                             <td>{item.artist}</td>
                             <td>{item.album}</td>
-                            <td>{item.duration.toTime()}</td>
                         </tr>
                     ))
                 }

@@ -1,3 +1,6 @@
+window.eval = global.eval = function(){
+    throw new Error("eval() function is not allowed.");
+}
 var mm = window.mm = require('music-metadata');
 var Store = require('electron-store');
 var remote = require('electron').remote;
@@ -9,7 +12,7 @@ require('electron').ipcRenderer.on('path', (event, message) => {
     window.dataPath = message;
 });
 
-//Note: Move this to React code to once audio plater is setup
+//Note: Move this to React code once audio plater is setup
 document.addEventListener('drop', function(e){
     e.preventDefault();
     e.stopPropagation();

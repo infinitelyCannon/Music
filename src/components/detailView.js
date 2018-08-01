@@ -4,7 +4,9 @@ import Img from 'react-image';
 
 function albumDetail({route, songs, albums}){
     var target = _.find(albums, {title: route.view.album, artist: route.view.by});
-    var music = _.sortBy(songs, (song) => {return song.trackNum.no});
+    var music = _.sortBy(_.filter(songs, (item) => {
+        return (item.album === route.view.album && item.albumArtist === route.view.by)
+    }), (song) => {return song.trackNum.no});
 
     return (
         <div id="container">
@@ -121,14 +123,143 @@ function  artistDetail({route, artists, albums, onNameClick}){
     );
 }
 
+function searchResults({route, songs, albums, artists, onNameClick}){
+    var songResults = _.filter(songs, (song) => {
+        return song.title.search(new RegExp(route.view.value, 'i')) != -1;
+    });
+    var albumResults = _.filter(albums, (album) => {
+        return album.title.search(new RegExp(route.view.value, 'i')) != -1;
+    });
+    var artistResults = _.filter(artists, (artist) => {
+        return artist.name.search(new RegExp(route.view.value, 'i')) != -1;
+    });
+    var messageCount = 1;
+
+    return (
+        <div id="container">
+            <section className="hero">
+                <div className="hero-body">
+                    <span className="subtitle">
+                        <h3 className="title is-3">Results For:</h3> {route.view.value}
+                    </span>
+                </div>
+            </section>
+            {
+                artistResults.length > 0 && (
+                    <article className="message" style={{zIndex: messageCount++, marginTop: '15px', marginBottom: '0'}}>
+                        <div className="message-header">
+                            <h3 className="subtitle">Artists</h3>
+                        </div>
+                    </article>
+                )
+            }
+            {
+                artistResults.length > 0 && (
+                    <div className="row">
+                        {
+                            _.map(artistResults, (artist) => (
+                                <div className="card artist" key={artist.name}>
+                                    <div className="card-image" onClick={() => onNameClick("view", {type: "artist", artist: artist.name})}>
+                                        <figure className="image is-1by1">
+                                            <Img src={[artist.photo, 'dist/person.png']} />
+                                        </figure>
+                                    </div>
+                                    <div className="card-content">
+                                        <a onClick={() => onNameClick("view", {type: "artist", artist: artist.name})}></a>
+                                    </div>
+                                </div>
+                            ))
+                        }
+                    </div>
+                )
+            }
+            {
+                albumResults.length > 0 && (
+                    <article className="message" style={{zIndex: messageCount++, marginTop: '15px', marginBottom: '0'}}>
+                        <div className="message-header">
+                            <h3 className="subtitle">Albums</h3>
+                        </div>
+                    </article>
+                )
+            }
+            {
+                albumResults.length > 0 && (
+                    <div className="row">
+                        {
+                            _.map(albumResults, (card) => (
+                                <div key={card.title + '_' + card.artist} className="card">
+                                    <div className="card-image" onClick={() => onNameClick("view", {album: card.title, by: card.artist, type: "album"})}>
+                                        <figure className="image is-1by1">
+                                            <img src={card.cover} />
+                                        </figure>
+                                    </div>
+                                    <div className="card-content">
+                                        <div className="media">
+                                            <div className="media-content">
+                                                <a onClick={() => onNameClick("view", {album: card.title, by: card.artist, type: "album"})} title={card.title} className="title is-5">{card.title}</a>
+                                                <br />
+                                                <a onClick={() => onNameClick("view", {type: "artist", artist: card.artist})} title={card.artist} className="subtitle is-6">{card.artist}</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        }
+                    </div>
+                )
+            }
+            {
+                songResults.length > 0 && (
+                    <article className="message" style={{zIndex: messageCount++, marginTop: '15px', marginBottom: '0'}}>
+                        <div className="message-header">
+                            <h3 className="subtitle">Songs</h3>
+                        </div>
+                    </article>
+                )
+            }
+            {
+                songResults.length > 0 && 
+                <table className="table is-fullwidth is-striped is-hoverable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>
+                                <span className="icon is-medium">
+                                    <i className="mdi mdi-24px mdi-clock-outline"></i>
+                                </span>
+                            </th>
+                            <th>Artist</th>
+                            <th>Album</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            _.map(songResults, (item) => (
+                                <tr key={item.id}>
+                                    <td>{item.title}</td>
+                                    <td>{item.duration.toTime()}</td>
+                                    <td>{item.artist}</td>
+                                    <td>{item.album}</td>
+                                </tr>
+                            ))
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    );
+}
+
 const DetailView = ({route, songs, albums, artists, onPlayStart, onNameClick}) => {
     switch(route.view.type){
         case "album":
             return albumDetail({route, songs, albums});
         case "artist":
             return artistDetail({route, artists, albums, onNameClick});
+        case "search":
+            return searchResults({route, songs, albums, artists, onNameClick});
         default:
-            return <p>Error: Invalid route detected.</p>
+            return <p>Error: Invalid route detected, {route.view.type}</p>
     }
 }
 

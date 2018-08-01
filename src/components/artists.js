@@ -7,8 +7,8 @@ function createList(data){
     var result = [];
 
     for(let i = 0; i < data.length; i++){
-        if(letter != data[i].name[0]){
-            letter = data[i].name[0];
+        if(letter != data[i].name[0].toUpperCase()){
+            letter = data[i].name[0].toUpperCase();
             result.push({header: true, value: letter});
             result.push(data[i]);
         }

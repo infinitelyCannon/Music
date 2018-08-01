@@ -11,6 +11,16 @@ class Navbar extends React.Component{
         };
         this.handleGenre = this.handleGenre.bind(this);
         this.handleSort = this.handleSort.bind(this);
+        this.handleSearch = this.handleSearch.bind(this);
+        this.searchRef = React.createRef();
+    }
+
+    handleSearch(e){
+        e.preventDefault();
+        e.stopPropagation();
+        if(this.searchRef.current.value != ''){
+            this.props.onNavClick("view", {type: "search", value: this.searchRef.current.value});
+        }
     }
 
     handleGenre(e){
@@ -94,12 +104,14 @@ class Navbar extends React.Component{
                     </div>
                     <div className="navbar-end">
                         <div className="navbar-item">
-                            <div className="control has-icons-left">
-                                <input className="input" type="text" placeholder="Search" />
-                                <span className="icon is-small is-left">
-                                    <i className="mdi mdi-24px mdi-magnify"></i>
-                                </span>
-                            </div>
+                            <form onSubmit={this.handleSearch}>
+                                <div className="control has-icons-left">
+                                    <input ref={this.searchRef} className="input" type="text" placeholder="Search" />
+                                    <span className="icon is-small is-left">
+                                        <i className="mdi mdi-24px mdi-magnify"></i>
+                                    </span>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
