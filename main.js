@@ -23,6 +23,19 @@ function createWindow(){
         win.webContents.send('path', app.getPath('userData'));
     });
 
+    win.on('app-command', (e, cmd) => {
+        switch(cmd){
+            case 'browser-backward':
+                win.webContents.send('navigate', cmd);
+                break;
+            case 'browser-forward':
+                win.webContents.send('navigate', cmd);
+                break;
+            default:
+                break;
+        }
+    });
+
     installExtension(REACT_DEVELOPER_TOOLS)
         .then((name) => console.log('Added Extension: ' + name))
         .catch((err) => console.log('An error occurred: ', err));

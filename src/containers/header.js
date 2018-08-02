@@ -1,6 +1,6 @@
 import {connect} from 'react-redux';
 import Navbar from '../components/navbar';
-import {navigateUI, additionReady} from '../actions';
+import {navigateUI, additionReady, navigateHistory} from '../actions';
 
 const mapStateToProps = state => {
     return {
@@ -16,8 +16,11 @@ const mapDispatchToProps = dispatch => {
         },
         importFolders: (data) => {
             dispatch(additionReady(data));
+        },
+        onHistoryTrigger: (forward) => {
+            dispatch(navigateHistory(forward));
         }
-    }
+    };
 };
 
 const Header = connect(mapStateToProps, mapDispatchToProps)(Navbar);

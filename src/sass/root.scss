@@ -9,7 +9,7 @@
 }
 
 body.is-tabbed #container{
-    height: calc(100vh - (93px + 92px));
+    height: calc(100vh - (93px + 97px));
     border: none;
 }
 
@@ -28,7 +28,7 @@ body.is-tabbed #container{
     display: flex;
     flex-wrap: wrap;
     width: 100vw;
-    height: calc(100vh - (52px + 92px));
+    height: calc(100vh - (52px + 97px));
     align-content: flex-start;
     padding: 0px 25px 45px 20px;
     overflow-y: scroll;

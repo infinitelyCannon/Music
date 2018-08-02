@@ -1,9 +1,14 @@
 import {combineReducers} from 'redux';
-import {ADD_SONGS, NAVIGATE_UI, SCAN_DIRECTORIES, ADDITION_FAILURE, ADDITION_READY} from './actions';
+import {ADD_SONGS, NAVIGATE_UI, SCAN_DIRECTORIES, ADDITION_FAILURE, ADDITION_READY, NAVIGATE_HISTORY} from './actions';
 import _ from 'lodash';
 import hash from 'hash-sum';
 const initialState = {
-    route: {view: "albums", sort: {type: "title", ascend: true}, filter: "All"},
+    route: {
+        view: "albums",
+        sort: {type: "title", ascend: true},
+        filter: "All",
+        history: {index: 0, list: ["albums"]}
+    },
     songs: window.eStore.get('songs') || [],
     albums: window.eStore.get('albums') || [],
     genres: window.eStore.get('genres') || [],
@@ -43,7 +48,33 @@ function safeVal(value, fallback){
 function route(state = initialState.route, action){
     switch(action.type){
         case NAVIGATE_UI:
-            return Object.assign({}, state, {[action.target]: action.value});
+            var hist;
+            if(state.history.list.length > state.history.index + 1){
+                hist = _.slice(state.history.list, 0, state.history.index + 1);
+                hist.push(action.value);
+            }
+            else{
+                hist = [...state.history.list, action.value];
+            }
+            return Object.assign({}, state, {[action.target]: action.value, history: {list: hist, index: hist.length - 1}});
+        case NAVIGATE_HISTORY:
+            var idx = state.history.index;
+            if(action.goForward){
+                if((idx + 1) < state.history.list.length){
+                    return Object.assign({}, state, {view: state.history.list[idx + 1], history: {list: state.history.list, index: idx + 1}});
+                }
+                else{
+                    return state;
+                }
+            }
+            else{
+                if((idx - 1) >= 0){
+                    return Object.assign({}, state, {view: state.history.list[idx - 1], history: {list: state.history.list, index: idx - 1}});
+                }
+                else{
+                    return state;
+                }
+            }
         default:
             return state;
     }

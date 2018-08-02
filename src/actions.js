@@ -2,11 +2,19 @@ export const ADD_SONGS = "ADD_SONGS";
 export const NAVIGATE_UI = "NAVIGATE_UI";
 export const SCAN_DIRECTORIES = "SCAN_DIRECTORIES";
 export const ADDITION_FAILURE = "ADDITION_FAILURE";
-export const ADDITION_READY = "ADDITION_READY"
+export const ADDITION_READY = "ADDITION_READY";
+export const NAVIGATE_HISTORY = "NAVIGATE_HISTORY";
 
 export function addSongs(){
     return {
         type: ADD_SONGS
+    };
+}
+
+export function navigateHistory(forward){
+    return {
+        type: NAVIGATE_HISTORY,
+        goForward: forward
     };
 }
 

@@ -12,8 +12,8 @@ class PlayBar extends React.Component{
                     <div className="level-item">
                         <div className="media">
                             <figure className="media-left">
-                                <p className="is-1by1">
-                                    <img src="http://via.placeholder.com/90x90?text=I" />
+                                <p className="image is-96x96">
+                                    <img src="dist/blankCover.png" />
                                 </p>
                             </figure>
                             <div className="media-content">

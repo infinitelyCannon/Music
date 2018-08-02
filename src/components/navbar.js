@@ -1,6 +1,7 @@
 import React from 'react';
 import VelocityComponent from 'velocity-react/velocity-component';
 import VelocityTransitionGroup from 'velocity-react/velocity-transition-group';
+const {ipcRenderer} = require('electron');
 
 class Navbar extends React.Component{
     constructor(props){
@@ -9,6 +10,15 @@ class Navbar extends React.Component{
             isDrawerOpen: false,
             worker: null
         };
+        ipcRenderer.on('navigate', (event, message) => {
+            if(message === 'browser-forward'){
+                this.props.onHistoryTrigger(true);
+            }
+            else{
+                this.props.onHistoryTrigger(false);
+            }
+        });
+
         this.handleGenre = this.handleGenre.bind(this);
         this.handleSort = this.handleSort.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
@@ -87,6 +97,7 @@ class Navbar extends React.Component{
                 <VelocityComponent animation={drawerAnimation} duration={250}>
                     <div className="drawer">
                         <p>Hello World!</p>
+                        <button onClick={() => this.openFolders()}>Add Folder(s)</button>
                     </div>
                 </VelocityComponent>
                 <VelocityTransitionGroup enter={overlayEntry} leave={overlayExit} duration={250}>
@@ -99,8 +110,15 @@ class Navbar extends React.Component{
                                 <i className="mdi mdi-24px mdi-menu"></i>
                             </span>
                         </a>
+                        {
+                            (typeof this.props.route.view === 'object') && 
+                            <a className="button" onClick={() => this.props.onNavClick("view", this.props.route.history.list[this.props.route.history.index - 1])}>
+                                <span className="icon is-medium">
+                                    <i className="mdi mdi-24px mdi-arrow-left"></i>
+                                </span>
+                            </a>
+                        }
                         <h4 className="title is-4">Music App</h4>
-                        <button onClick={() => this.openFolders()}>Add Folder(s)</button>
                     </div>
                     <div className="navbar-end">
                         <div className="navbar-item">
