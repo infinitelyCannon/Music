@@ -53,8 +53,8 @@ function albumDetail({route, songs, albums}){
                     {
                         _.map(music, (item) => (
                             <tr key={item.id}>
-                                <td>{(typeof item.trackNum.no === "number" ? item.trackNum.no : "-")}</td>
-                                <td>{item.title}</td>
+                                <td>{(typeof item.trackNum.no != null ? item.trackNum.no : "-")}</td>
+                                <td><span className="song-title">{item.title}</span></td>
                                 <td>{item.duration.toTime()}</td>
                                 <td>{item.artist}</td>
                                 <td>{item.playcount}</td>

@@ -173,6 +173,19 @@ li{
     }
 }
 
+.song-title{
+    position: relative;
+    &:hover{
+        text-decoration: underline;
+        cursor: pointer;
+    }
+    &:hover::before{
+        content: "\25b6\00a0";
+        position: absolute;
+        left: -20px;
+    }
+}
+
 .media-content{
     white-space: nowrap;
     overflow: hidden;

@@ -44,7 +44,7 @@ const Songs = ({music, route}) => {
                 {
                     _.map(sorting(music, route)(), (item) => (
                         <tr key={item.id}>
-                            <td>{item.title}</td>
+                            <td><span style={{marginLeft: '20px'}} className="song-title">{item.title}</span></td>
                             <td>{item.duration.toTime()}</td>
                             <td>{item.artist}</td>
                             <td>{item.album}</td>
