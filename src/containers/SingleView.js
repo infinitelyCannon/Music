@@ -1,6 +1,6 @@
 import {connect} from 'react-redux';
 import DetailView from '../components/detailView';
-import {navigateUI} from '../actions';
+import {navigateUI, addToQueue} from '../actions';
 
 const mapStateToProps = state => {
     return {
@@ -13,8 +13,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onPlayStart: (target) => console.log("Playing " + target),
-        onNameClick: (target, value) => dispatch(navigateUI(target, value))
+        onPlayStart: (list, start) => dispatch(addToQueue(list, start)),
+        onNameClick: (target, value) => dispatch(navigateUI(target, value)),
     }
 };
 

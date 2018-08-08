@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import Img from 'react-image';
 
-function albumDetail({route, songs, albums}){
+function albumDetail({route, songs, albums, onPlayStart}){
     var target = _.find(albums, {title: route.view.album, artist: route.view.by});
     var music = _.sortBy(_.filter(songs, (item) => {
         return (item.album === route.view.album && item.albumArtist === route.view.by)
@@ -51,10 +51,10 @@ function albumDetail({route, songs, albums}){
                 </thead>
                 <tbody>
                     {
-                        _.map(music, (item) => (
+                        _.map(music, (item, index) => (
                             <tr key={item.id}>
                                 <td>{(typeof item.trackNum.no != null ? item.trackNum.no : "-")}</td>
-                                <td><span className="song-title">{item.title}</span></td>
+                                <td><span onClick={() => onPlayStart(["new", ...music], index)} className="song-title">{item.title}</span></td>
                                 <td>{item.duration.toTime()}</td>
                                 <td>{item.artist}</td>
                                 <td>{item.playcount}</td>
@@ -253,7 +253,7 @@ function searchResults({route, songs, albums, artists, onNameClick}){
 const DetailView = ({route, songs, albums, artists, onPlayStart, onNameClick}) => {
     switch(route.view.type){
         case "album":
-            return albumDetail({route, songs, albums});
+            return albumDetail({route, songs, albums, onPlayStart});
         case "artist":
             return artistDetail({route, artists, albums, onNameClick});
         case "search":

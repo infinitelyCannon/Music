@@ -15,6 +15,7 @@
     "classnames": "^2.2.6",
     "electron-store": "^2.0.0",
     "hash-sum": "^1.0.2",
+    "howler": "^2.0.14",
     "immutable": "^3.8.2",
     "lodash": "^4.17.10",
     "music-metadata": "^2.2.0",

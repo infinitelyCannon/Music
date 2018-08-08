@@ -99,6 +99,22 @@ input[type=range]::-webkit-slider-runnable-track{
     }
 }
 
+#playbar{
+    margin: 0;
+}
+
+#playbar-left{
+    flex-basis: 21%;
+}
+
+#playbar-mid{
+    flex-basis: 67%;
+}
+
+#playbar-right{
+    flex-basis: 11%;
+}
+
 #album-info{
     height: fit-content;
     margin-top: 40px;

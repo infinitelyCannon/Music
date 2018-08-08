@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux';
-import {ADD_SONGS, NAVIGATE_UI, SCAN_DIRECTORIES, ADDITION_FAILURE, ADDITION_READY, NAVIGATE_HISTORY} from './actions';
+import {ADD_SONGS, NAVIGATE_UI, SCAN_DIRECTORIES, ADDITION_FAILURE, ADDITION_READY, NAVIGATE_HISTORY, ADD_TO_QUEUE} from './actions';
 import _ from 'lodash';
 import hash from 'hash-sum';
 const initialState = {
@@ -12,7 +12,14 @@ const initialState = {
     songs: window.eStore.get('songs') || [],
     albums: window.eStore.get('albums') || [],
     genres: window.eStore.get('genres') || [],
-    artists: window.eStore.get('artists') || []
+    artists: window.eStore.get('artists') || [],
+    player: {
+        queue: [],
+        index: 0,
+        nowPlaying: ''
+        /* shuffle: false,
+        repeat: 'repeat-off' */ // 'repeat-off': repeat : repeat-once
+    }
 };
 /*
 {
@@ -25,6 +32,7 @@ const initialState = {
     albums: [],
     genres: ["All"]
 };
+
 */
 function safeImg(data){
     return (data != undefined ? window.dataPath + '/img/' + data.id + '.' + data.type : 'dist/blankCover.png');
@@ -42,6 +50,15 @@ function safeVal(value, fallback){
     }
     else{
         return value;
+    }
+}
+
+function player(state = initialState.player, action){
+    switch(action.type){
+        case ADD_TO_QUEUE:
+            return Object.assign({}, {queue: action.list, index: action.start});
+        default:
+            return state;
     }
 }
 
@@ -190,7 +207,8 @@ const rootReducer = combineReducers({
     songs: songs,
     albums: albums,
     genres: genres,
-    artists: artists
+    artists: artists,
+    player: player
 });
 
 export default rootReducer;
