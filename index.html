@@ -6,81 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Index</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src *; style-src 'self' 'unsafe-inline'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https:; style-src 'self' 'unsafe-inline'; media-src 'self' filesystem: blob: data:">
     <link rel="stylesheet" href="dist/css/bundle.min.css" />
     <link rel="stylesheet" href="dist/css/materialdesignicons.min.css" />
 </head>
 
 <body id="pageBody" class="has-navbar-fixed-top has-navbar-fixed-bottom is-tabbed">
     <div id="main"></div>
-    <nav id="playbar" class="level is-fixed-bottom">
-        <div id="playbar-left" class="level-left">
-            <div class="level-item">
-                <div class="media">
-                    <figure class="media-left">
-                        <p class="image is-96x96">
-                            <img src="dist/blankCover.png" />
-                        </p>
-                    </figure>
-                    <div class="media-content">
-                        <a class="title is-5"></a><br />
-                        <a id="nowArtist" class="subtitle"></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="level-item has-text-centered" id="playbar-mid">
-            <div id="playing-btns" class="buttons">
-                <span id="time-start">&nbsp;</span>
-                <a class="button">
-                    <span class="icon is-small">
-                        <i class="mdi mdi-repeat"></i>
-                    </span>
-                </a>
-                <a class="button">
-                    <span class="icon is-small">
-                        <i class="mdi mdi-skip-previous"></i>
-                    </span>
-                </a>
-                <a class="button">
-                    <span class="icon is-medium">
-                        <i class="mdi mdi-36px mdi-play"></i>
-                    </span>
-                </a>
-                <a class="button">
-                    <span class="icon is-small">
-                        <i class="mdi mdi-skip-next"></i>
-                    </span>
-                </a>
-                <a class="button">
-                    <span class="icon is-small">
-                        <i class="mdi mdi-shuffle"></i>
-                    </span>
-                </a>
-                <span id="time-end">&nbsp;</span>
-                <div id="audio-track">
-                    <input type="range" value="0" min="0" max="100" />
-                    <progress class="progress is-small is-primary" max="100"></progress>
-                </div>
-            </div>
-        </div>
-        <div id="playbar-right" class="level-right">
-            <div class="level-item">
-                <p class="buttons">
-                    <a class="button">
-                        <span class="icon is-medium">
-                            <i class="mdi mdi-volume-off"></i>
-                        </span>
-                    </a>
-                    <a class="button">
-                        <span class="icon is-medium">
-                            <i class="mdi mdi-playlist-play"></i>
-                        </span>
-                    </a>
-                </p>
-            </div>
-        </div>
-    </nav>
     <script src="dist/setup.js"></script>
     <script src="dist/main.js" defer></script>
 </body>

@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux';
-import {ADD_SONGS, NAVIGATE_UI, SCAN_DIRECTORIES, ADDITION_FAILURE, ADDITION_READY, NAVIGATE_HISTORY, ADD_TO_QUEUE} from './actions';
+import {ADD_SONGS, NAVIGATE_UI, SCAN_DIRECTORIES, ADDITION_FAILURE, ADDITION_READY, NAVIGATE_HISTORY, ADD_TO_QUEUE, UPDATE_INDEX, UPDATE_NOW_PLAYING} from './actions';
 import _ from 'lodash';
 import hash from 'hash-sum';
 const initialState = {
@@ -15,10 +15,8 @@ const initialState = {
     artists: window.eStore.get('artists') || [],
     player: {
         queue: [],
-        index: 0,
-        nowPlaying: ''
-        /* shuffle: false,
-        repeat: 'repeat-off' */ // 'repeat-off': repeat : repeat-once
+        index: -1,
+        nowPlaying: ''// 'repeat-off': repeat : repeat-once
     }
 };
 /*
@@ -57,6 +55,10 @@ function player(state = initialState.player, action){
     switch(action.type){
         case ADD_TO_QUEUE:
             return Object.assign({}, {queue: action.list, index: action.start});
+        case UPDATE_INDEX:
+            return Object.assign({}, state, {index: action.index});
+        case UPDATE_NOW_PLAYING:
+            return Object.assign({}, state, {nowPlaying: action.id});
         default:
             return state;
     }

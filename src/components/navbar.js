@@ -112,7 +112,7 @@ class Navbar extends React.Component{
                         </a>
                         {
                             (typeof this.props.route.view === 'object') && 
-                            <a className="button" onClick={() => this.props.onNavClick("view", this.props.route.history.list[this.props.route.history.index - 1])}>
+                            <a className="button" onClick={() => this.props.onHistoryTrigger(false)}>
                                 <span className="icon is-medium">
                                     <i className="mdi mdi-24px mdi-arrow-left"></i>
                                 </span>

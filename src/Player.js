@@ -1,21 +1,11 @@
 import {Howl, Howler} from 'howler';
+import _ from 'lodash';
 
 class Player{
     constructor(){
         this.queue = [];
-        this.index = 0;
+        this.index = -1;
         this.isActive = false;
-        this.root = document.getElementById('playbar');
-        this.bar = {
-            progress: this.root.querySelector('progress'),
-            handle: this.root.querySelector('input')
-        };
-
-        this.root.querySelector('a:nth-child(4)').addEventListener('click', () =>{
-            if(this.isActive){
-                this.playPause();
-            }
-        });
     }
 
     play(index){
@@ -30,68 +20,136 @@ class Player{
             sound = this.queue[index].howl = new Howl({
                 src: [track.id],
                 html5: true,
-                loop: true,
                 onplay: () => {
-                    this.root.querySelector('.title').innerHTML = track.title;
-                    this.root.querySelector('#nowArtist').innerHTML = track.artist;
-                    this.root.querySelector('img').src = track.cover;
-                    this.root.querySelector('#time-end').innerHTML = track.duration.toTime();
-                    this.root.querySelector('.mdi-36px').classList.remove("mdi-play");
-                    this.root.querySelector('.mdi-36px').classList.add("mdi-pause");
-                    requestAnimationFrame(this.step.bind(this));
+                    this.onPlayTrigger();
+                    this.isActive = true;
+                },
+                onend: () => {
+                    this.onEndTrigger();
                 }
             });
         }
 
         sound.play();
-        this.isActive = true;
         this.index = index;
     }
 
     playPause(){
+        if(this.queue.length === 0) return;
         var sound = this.queue[this.index].howl;
 
-        if(this.queue.length != 0){
-            if(sound.playing()){
-                sound.pause();
-                this.root.querySelector('.mdi-36px').classList.remove("mdi-pause");
-                this.root.querySelector('.mdi-36px').classList.add("mdi-play");
-            }
-            else{
-                sound.play();
-                this.root.querySelector('.mdi-36px').classList.remove("mdi-play");
-                this.root.querySelector('.mdi-36px').classList.add("mdi-pause");
-            }
+        if(sound.playing()){
+            sound.pause();
+        }
+        else{
+            sound.play();
         }
     }
 
-    beginPlayback(list, start){
+    skip(dir){
+        if(this.queue.length === 0) return;
+        var index = 0;
+
+        if(dir === 'prev'){
+            index = this.index - 1;
+            if(index < 0){
+                index = this.queue.length - 1;
+            }
+        }
+        else{
+            index = this.index + 1;
+            if(index >= this.queue.length){
+                index = 0;
+            }
+        }
+
+        this.skipTo(index);
+    }
+
+    skipTo(index){
+        if(this.queue[this.index].howl){
+            this.queue[this.index].howl.stop();
+        }
+
+        this.newIndex(index);
+        this.newTrack(this.queue[index].id);
+        this.play(index);
+    }
+
+    beginPlayback(list, start, rando){
+        let tempID = list[start].id;
+        if(this.isPlaying()){
+            this.queue[this.index].howl.stop();
+            this.cleanUp();
+        }
+
+        if(rando){
+            this.queue = _.shuffle(_.map(list, (item) =>{
+                return Object.assign({}, item, {howl: null});
+            }));
+            this.index = _.findIndex(this.queue, (item) => {return item.id === tempID});
+        }
+        else{
+            this.queue = _.map(list, (item) =>{
+                return Object.assign({}, item, {howl: null});
+            });
+            this.index = start;
+        }
+
+        this.skipTo(this.index);
+    }
+
+    scramble(){
+        var tempID = this.queue[this.index].id;
+        this.queue = _.shuffle(this.queue);
+        this.index = _.findIndex(this.queue, (item) => {return item.id === tempID});
+    }
+
+    unscramble(){
+        var tempID = this.queue[this.index].id;
+        this.queue = _.sortBy(this.queue, (item) => {return item.trackNum.no});
+        this.index = _.findIndex(this.queue, (item) => {return item.id === tempID});
+    }
+
+    stop(){
+        this.isActive = false;
         if(this.isPlaying()){
             this.queue[this.index].howl.stop();
         }
 
-        this.queue = list.map((item) =>{
-            return Object.assign({}, item, {howl: null});
-        });
-        this.index = start;
-
-        this.play(start);
+        this.cleanUp();
     }
 
-    step(){
-        var sound = this.queue[this.index].howl;
-        var seek = sound.seek() || 0;
+    cleanUp(){
+        this.queue.forEach(function(val){
+            if(val.howl != null){
+                val.howl.unload();
+            }
+        });
+    }
 
-        this.root.querySelector('#time-start').innerHTML = seek.toTime();
-        this.bar.progress.value = this.bar.handle.value = (seek / sound.duration()) * 100;
-
-        if(sound.playing()){
-            requestAnimationFrame(this.step.bind(this));
+    setDispatcher(type, func){
+        switch(type){
+            case 'indx':
+                this.newIndex = func;
+                break;
+            case 'id':
+                this.newTrack = func;
+                break;
+            case 'end':
+                this.onEndTrigger = func;
+                break;
+            default:
+                break;
         }
     }
 
+    setPlayTrigger(func){
+        this.onPlayTrigger = func;
+    }
+
     isPlaying(){
-        if(this.queue.length === 0){
+        if(this.queue.length === 0 || !this.isActive){
             return false;
         }
         else{
@@ -104,7 +162,20 @@ class Player{
     }
 
     getNowPlaying(){
-        return this.queue[this.index].howl;
+        return this.queue[this.index];
+    }
+
+    getProgress(){
+        if(this.isActive){
+            return this.queue[this.index].howl.seek();
+        }
+        else{
+            return 0;
+        }
+    }
+
+    getIndex(){
+        return this.index;
     }
 
     setVolume(percent){

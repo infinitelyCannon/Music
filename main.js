@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain, globalShortcut} = require('electron');
+const {app, BrowserWindow, ipcMain, globalShortcut, Menu} = require('electron');
 const {default: installExtension, REACT_DEVELOPER_TOOLS} = require('electron-devtools-installer');
 const Store = require('electron-store');
 const fs = require('fs');
@@ -67,6 +67,7 @@ app.on('ready', () => {
 
     console.log(globalShortcut.isRegistered('MediaPlayPause'));
 */
+    //Menu.setApplicationMenu(null);
     createWindow();
 });
 
