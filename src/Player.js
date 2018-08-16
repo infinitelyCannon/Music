@@ -120,6 +120,12 @@ class Player{
         this.cleanUp();
     }
 
+    seek(per){
+        var sound = this.queue[this.index].howl;
+
+        sound.seek(sound.duration * (per / 100));
+    }
+
     cleanUp(){
         this.queue.forEach(function(val){
             if(val.howl != null){

@@ -17,6 +17,17 @@ class PlayBar extends React.Component{
         this.onEndTrigger = this.onEndTrigger.bind(this);
         Music.setPlayTrigger(this.onPlayStart);
         Music.setDispatcher('end', this.onEndTrigger);
+        this.inputRef = React.createRef();
+        this.seekScript = true;
+    }
+
+    handleBar(value){
+        if(this.seekScript){
+            return value;
+        }
+        else{
+            return this.inputRef.current.value;
+        }
     }
 
     componentDidMount(){
@@ -103,8 +114,10 @@ class PlayBar extends React.Component{
 
     render(){
         var nowPlaying = undefined;
+        var currTime = 0;
         if(this.props.player.nowPlaying != ''){
-            nowPlaying = _.find(this.props.songs, (item) => {return item.id === this.props.player.nowPlaying});
+            nowPlaying = _.find(this.props.player.queue, (item) => {return item.id === this.props.player.nowPlaying});
+            currTime = (this.state.seek / nowPlaying.duration) * 100;
         }
 
         return (
@@ -154,8 +167,9 @@ class PlayBar extends React.Component{
                         </a>
                         <span id="time-end">{nowPlaying != undefined ? toTime(nowPlaying.duration) : " "}</span>
                         <div id="audio-track">
-                            <input type="range" value={nowPlaying != undefined && Music.isActive ? ((this.state.seek / nowPlaying.duration) * 100) : 0} min="0" max="100" />
-                            <progress value={nowPlaying != undefined && Music.isActive ? ((this.state.seek / nowPlaying.duration) * 100) : 0} className="progress is-small is-primary" max="100"></progress>
+                            <div id="track-handle" style={{left: "calc(" + this.handleBar(currTime) + "% - 10px)"}}></div>
+                            <input onDragEnd={() =>{}} onMouseDown={() => {this.seekScript = false;}} defaultValue="0" ref={this.inputRef} type="range" min="0" max="100" />
+                            <progress value={nowPlaying != undefined && Music.isActive ? currTime : 0} className="progress is-small is-primary" max="100"></progress>
                         </div>
                     </div>
                 </div>

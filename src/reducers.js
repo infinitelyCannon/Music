@@ -16,22 +16,10 @@ const initialState = {
     player: {
         queue: [],
         index: -1,
-        nowPlaying: ''// 'repeat-off': repeat : repeat-once
+        nowPlaying: ''
     }
 };
-/*
-{
-    route: {
-        view: "albums",
-        sort: {type: "title", ascend: true},
-        filter: "All"
-    },
-    songs: [],
-    albums: [],
-    genres: ["All"]
-};
 
-*/
 function safeImg(data){
     return (data != undefined ? window.dataPath + '/img/' + data.id + '.' + data.type : 'dist/blankCover.png');
 }

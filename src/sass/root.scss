@@ -8,8 +8,18 @@
     }
 }
 
+#track-handle{
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    background-color: hsl(171, 100%, 41%);
+    position: absolute;
+    top: -3.5px;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+
 i.is-highlighted{
-    color: #00cbfd !important;
+    color: hsl(171, 100%, 41%) !important;
 }
 
 body.is-tabbed #container{
@@ -198,6 +208,18 @@ li{
         position: absolute;
         left: -20px;
     }
+}
+
+#toaster{
+    position: fixed;
+    top: 94px;
+    right: 0px;
+}
+
+.toast{
+    position: absolute;
+    opacity: 0;
+    transition: top 0.45s;
 }
 
 .media-content{

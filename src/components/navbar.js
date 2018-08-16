@@ -1,6 +1,7 @@
 import React from 'react';
 import VelocityComponent from 'velocity-react/velocity-component';
 import VelocityTransitionGroup from 'velocity-react/velocity-transition-group';
+import Notifications from '../util/Notification';
 const {ipcRenderer} = require('electron');
 
 class Navbar extends React.Component{
@@ -103,6 +104,7 @@ class Navbar extends React.Component{
                 <VelocityTransitionGroup enter={overlayEntry} leave={overlayExit} duration={250}>
                     {this.state.isDrawerOpen ? <div id="overlay" onClick={() => this.setState({isDrawerOpen: !this.state.isDrawerOpen})}></div> : undefined}
                 </VelocityTransitionGroup>
+                <Notifications />
                 <div className="navbar-brand">
                     <div className="navbar-start">
                         <a className="button" onClick={() => this.setState({isDrawerOpen: !this.state.isDrawerOpen})}>
