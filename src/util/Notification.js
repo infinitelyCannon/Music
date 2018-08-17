@@ -47,7 +47,7 @@ class Notifications extends React.Component{
         <VelocityTransitionGroup enter={EntryAnim} leave={ExitAnim}>
             {
                 this.state.drawer.map((item, idx) => (
-                    <div key={item.msg} className="box toast" style={{top: (93 + (60 * (this.state.drawer.length - idx))) + "px"}}>
+                    <div key={item.msg} className="box toast" style={{top: (93 + (70 * (this.state.drawer.length - (idx + 1) ))) + "px"}}>
                         <h1>{item.msg}</h1>
                     </div>
                 ))
