@@ -1,13 +1,29 @@
 const fs = require('fs');
+const music = require('music-metadata');
+const {URL} = require('url');
+const hash = require('hash-sum');
 
 onmessage = main;
+var output = [];
+var outLen = 0;
+var fileNames = [];
+
+function addMeta(item, doesExist){
+    item.common.picture = doesExist;
+    output.push(item);
+    outLen++;
+
+    if(outLen >= fileNames.length){
+        postMessage(output);
+    }
+}
 
 function mainHelper(dir){
     var items = fs.readdirSync(dir);
     var stat;
 
     for(var i = 0; i < items.length; i++){
-        var file = dir + '\\' + items[i];
+        var file = dir + '/' + items[i];
 
         stat = fs.statSync(file);
         if(stat.isDirectory()){
@@ -28,7 +44,7 @@ function mainHelper(dir){
                 case 'asf':
                 case 'm4a':
                 case 'oga':
-                    postMessage(file);
+                    fileNames.push(file);
                     break;
                 default:
                     break;
@@ -38,9 +54,36 @@ function mainHelper(dir){
 }
 
 function main(e){
-    for(var i = 0; i < e.data.length; i++){
-        mainHelper(e.data[i]);
+    for(let i = 0; i < e.data[0].length; i++){
+        mainHelper(e.data[0][i]);
     }
 
-    postMessage(0);
+    for(let j = 0; j < fileNames.length; j++){
+        music.parseFile(fileNames[j], {duration: true})
+        .then((metadata) => {
+            var path = new URL('file://' + fileNames[j]);
+            var photoHash;
+            if(metadata.common.picture != undefined){
+                photoHash = hash(metadata.common.picture[0].data);
+                fs.writeFileSync(
+                    e.data[1] + 
+                    '/img/' +
+                    photoHash +
+                    '.' +
+                    metadata.common.picture[0].format.slice(metadata.common.picture[0].format.indexOf('/') + 1), metadata.common.picture[0].data);
+                addMeta(Object.assign({}, metadata, {
+                    fileName: path.toString(),
+                    name: fileNames[j].slice(fileNames[j].lastIndexOf('/') + 1, fileNames[j].lastIndexOf('.'))
+                }), {type: metadata.common.picture[0].format.slice(metadata.common.picture[0].format.indexOf('/') + 1), id: photoHash});
+            }
+            else{
+                addMeta(Object.assign({}, metadata, {
+                    fileName: path.toString(),
+                    name: fileNames[j].slice(fileNames[j].lastIndexOf('/') + 1, fileNames[j].lastIndexOf('.'))
+                }), undefined);
+            }
+        })
+    }
+
+    //postMessage(0);
 }

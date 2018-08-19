@@ -1,9 +1,9 @@
 var gulp = require('gulp');
 var source = require('vinyl-source-stream');
 var browserify = require('browserify');
-var babelify = require('babelify');
+//var babelify = require('babelify');
 var rename = require('gulp-rename');
-var uglify = require('uglifyify');
+//var uglify = require('uglifyify');
 var sass = require('gulp-sass');
 
 gulp.task('make-css', function(){
@@ -21,8 +21,10 @@ gulp.task('make-css', function(){
 gulp.task('make', function(){
     browserify('./src/index.js', {debug: true})
         .transform("babelify", {presets: ["babel-preset-env", "babel-preset-react"]})
+        .transform("uglifyify")
         .exclude('electron')
         .exclude("fs")
+        .exclude('url')
         .bundle()
         .pipe(source('./src/index.js'))
         .pipe(rename('main.js'))

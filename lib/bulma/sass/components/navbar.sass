@@ -1,12 +1,12 @@
 $navbar-background-color: $white !default
 $navbar-box-shadow-size: 0 2px 0 0 !default
 $navbar-box-shadow-color: $background !default
-$navbar-height: (3.25rem + 1.875rem) !default //Default height + Toolbar
+$navbar-height: 3.25rem !default //Default height
 $navbar-padding-vertical: 1rem !default
 $navbar-padding-horizontal: 2rem !default
 $navbar-z: 30 !default
 $navbar-fixed-z: 30 !default
-$navbar-height-extend: 153px !default //Navbar height + Tabs + Toolbar
+$navbar-height-extend: 93px !default //Navbar height + Tabs
 
 $navbar-item-color: $grey-dark !default
 $navbar-item-hover-color: $link !default
@@ -48,7 +48,6 @@ $navbar-bottom-box-shadow-size: 0 -2px 0 0 !default
   position: fixed
   right: 0
   z-index: $navbar-fixed-z
-  padding-top: 30px
 
 nav
   flex-wrap: wrap
@@ -76,6 +75,7 @@ nav
       color: $color-invert
       .navbar-brand
         flex-basis: 100%
+        flex-grow: 1
         & > .navbar-item,
         .navbar-link
           color: $color-invert

@@ -1,10 +1,18 @@
+window.eval = global.eval = function(){
+    throw new Error("eval() function is not allowed.");
+}
 var mm = window.mm = require('music-metadata');
 var Store = require('electron-store');
 var remote = require('electron').remote;
+var pic;
 window.dialog = remote.dialog;
 window.eStore = new Store();
 
-//Note: Move this to React code to once audio plater is setup
+require('electron').ipcRenderer.on('path', (event, message) => {
+    window.dataPath = message;
+});
+
+//Note: Move this to React code once audio plater is setup
 document.addEventListener('drop', function(e){
     e.preventDefault();
     e.stopPropagation();
@@ -20,8 +28,9 @@ document.addEventListener('dragover', function(e){
 });
 
 function read(place){
-    mm.parseFile(place, {native: true, mergeTagHeaders: true})
+    mm.parseFile(place, {native: true, duration: true})
         .then(function(metadata){
+            pic = metadata;
             console.log(metadata);
         })
         .catch(function(err){
