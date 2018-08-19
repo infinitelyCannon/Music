@@ -1,6 +1,7 @@
 import React from 'react';
 //import VelocityComponent from 'velocity-react/velocity-component';
 import VelocityTransitionGroup from 'velocity-react/velocity-transition-group';
+import _ from 'lodash';
 
 const EntryAnim = {
     animation: {
@@ -16,6 +17,25 @@ const ExitAnim = {
     }
 }
 
+function ToastSlice(props){
+    switch(props.info.type){
+        case "msg":
+            setTimeout(() => window.removeToast(props.info.id), 4500);
+            return (
+                <div className="box toast" style={{top: (93 + (70 * (props.size - (props.index + 1) ))) + "px"}}>
+                    <h1>{props.info.msg}</h1>
+                    <a className="button" onClick={() => window.removeToast(props.info.id)}>
+                        <span className="icon is-small">
+                            <i className="mdi mdi-18px mdi-close"></i>
+                        </span>
+                    </a>
+                </div>
+            );
+        default:
+            return <span></span>;
+    }
+}
+
 class Notifications extends React.Component{
     constructor(props){
         super(props);
@@ -26,10 +46,19 @@ class Notifications extends React.Component{
         window.removeToast = this.removeToast.bind(this);
     }
 
-    appendToast(type){
+    appendToast(data, id = Date.now()){
         let items = this.state.drawer;
 
-        items.push({msg: type});
+        items.push(Object.assign({}, data, {id: id}));
+
+        this.setState({drawer: items});
+    }
+
+    updateToast(id){
+        let items = this.state.drawer;
+        let freshToast = _.find(items, (n) => {return n.id === id});
+
+        items = _.union([freshToast], items);
 
         this.setState({drawer: items});
     }
@@ -37,7 +66,7 @@ class Notifications extends React.Component{
     removeToast(id){
         let items = this.state.drawer;
 
-        items.pop();
+        items = _.filter(items, (item) => {return item.id != id});
 
         this.setState({drawer: items});
     }
@@ -46,11 +75,7 @@ class Notifications extends React.Component{
         return (
         <VelocityTransitionGroup enter={EntryAnim} leave={ExitAnim}>
             {
-                this.state.drawer.map((item, idx) => (
-                    <div key={item.msg} className="box toast" style={{top: (93 + (70 * (this.state.drawer.length - (idx + 1) ))) + "px"}}>
-                        <h1>{item.msg}</h1>
-                    </div>
-                ))
+                this.state.drawer.map((item, idx) => <ToastSlice key={item.id} info={item} index={idx} size={this.state.drawer.length} />)
             }
         </VelocityTransitionGroup>
         );

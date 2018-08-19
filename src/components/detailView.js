@@ -2,10 +2,10 @@ import React from 'react';
 import _ from 'lodash';
 import Img from 'react-image';
 
-function albumDetail({route, songs, albums, onPlayStart}){
-    var target = _.find(albums, {title: route.view.album, artist: route.view.by});
-    var music = _.sortBy(_.filter(songs, (item) => {
-        return (item.album === route.view.album && item.albumArtist === route.view.by)
+function AlbumDetail(props){
+    var target = _.find(props.albums, {title: props.route.view.album, artist: props.route.view.by});
+    var music = _.sortBy(_.filter(props.songs, (item) => {
+        return (item.album === props.route.view.album && item.albumArtist === props.route.view.by)
     }), (song) => {return song.trackNum.no});
 
     return (
@@ -54,7 +54,7 @@ function albumDetail({route, songs, albums, onPlayStart}){
                         _.map(music, (item, index) => (
                             <tr key={item.id}>
                                 <td>{(typeof item.trackNum.no != null ? item.trackNum.no : "-")}</td>
-                                <td><span onClick={() => onPlayStart(["new", ...music], index)} className="song-title">{item.title}</span></td>
+                                <td><span onClick={() => props.onPlayStart(["new", ...music], index)} className="song-title">{item.title}</span></td>
                                 <td>{item.duration.toTime()}</td>
                                 <td>{item.artist}</td>
                                 <td>{item.playcount}</td>
@@ -67,9 +67,9 @@ function albumDetail({route, songs, albums, onPlayStart}){
     );
 }
 
-function  artistDetail({route, artists, albums, onNameClick}){
-    var target = _.find(artists, {name: route.view.artist});
-    var music = _.sortBy(_.filter(albums, (item) => {return (item.artist == route.view.artist)}), 'title');
+function  ArtistDetail(props){
+    var target = _.find(props.artists, {name: props.route.view.artist});
+    var music = _.sortBy(_.filter(props.albums, (item) => {return (item.artist == props.route.view.artist)}), 'title');
 
     return (
     <div id="container">
@@ -105,15 +105,19 @@ function  artistDetail({route, artists, albums, onNameClick}){
             {
                 _.map(music, (item) => (
                     <div className="card" key={item.title}>
-                        <div className="card-image" onClick={() => onNameClick("view", {type: "album", album: item.title, by: target.name})}>
+                        <div className="card-image" onClick={() => props.onNameClick("view", {type: "album", album: item.title, by: target.name})}>
                             <figure className="image is-1by1">
                                 <img src={item.cover} />
                             </figure>
                         </div>
                         <div className="card-content">
-                            <a onClick={() => onNameClick("view", {type: "album", album: item.title, by: target.name})} className="title is-4">{item.title}</a>
-                            <br />
-                            <span className="subtitle">{item.year}</span>
+                            <div className="media">
+                                <div className="media-content">
+                                    <a title={item.title} onClick={() => props.onNameClick("view", {type: "album", album: item.title, by: target.name})} className="title is-4">{item.title}</a>
+                                    <br />
+                                    <span className="subtitle">{item.year}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 ))
@@ -123,15 +127,15 @@ function  artistDetail({route, artists, albums, onNameClick}){
     );
 }
 
-function searchResults({route, songs, albums, artists, onNameClick}){
-    var songResults = _.filter(songs, (song) => {
-        return song.title.search(new RegExp(route.view.value, 'i')) != -1;
+function SearchResults(props){
+    var songResults = _.filter(props.songs, (song) => {
+        return song.title.search(new RegExp(props.route.view.value, 'i')) != -1;
     });
-    var albumResults = _.filter(albums, (album) => {
-        return album.title.search(new RegExp(route.view.value, 'i')) != -1;
+    var albumResults = _.filter(props.albums, (album) => {
+        return album.title.search(new RegExp(props.route.view.value, 'i')) != -1;
     });
-    var artistResults = _.filter(artists, (artist) => {
-        return artist.name.search(new RegExp(route.view.value, 'i')) != -1;
+    var artistResults = _.filter(props.artists, (artist) => {
+        return artist.name.search(new RegExp(props.route.view.value, 'i')) != -1;
     });
     var messageCount = 1;
 
@@ -140,7 +144,7 @@ function searchResults({route, songs, albums, artists, onNameClick}){
             <section className="hero">
                 <div className="hero-body">
                     <span className="subtitle">
-                        <h3 className="title is-3">Results For:</h3> {route.view.value}
+                        <h3 className="title is-3">Results For:</h3> {props.route.view.value}
                     </span>
                 </div>
             </section>
@@ -159,13 +163,13 @@ function searchResults({route, songs, albums, artists, onNameClick}){
                         {
                             _.map(artistResults, (artist) => (
                                 <div className="card artist" key={artist.name}>
-                                    <div className="card-image" onClick={() => onNameClick("view", {type: "artist", artist: artist.name})}>
+                                    <div className="card-image" onClick={() => props.onNameClick("view", {type: "artist", artist: artist.name})}>
                                         <figure className="image is-1by1">
                                             <Img src={[artist.photo, 'dist/person.png']} />
                                         </figure>
                                     </div>
                                     <div className="card-content">
-                                        <a onClick={() => onNameClick("view", {type: "artist", artist: artist.name})}></a>
+                                        <a onClick={() => props.onNameClick("view", {type: "artist", artist: artist.name})}></a>
                                     </div>
                                 </div>
                             ))
@@ -188,7 +192,7 @@ function searchResults({route, songs, albums, artists, onNameClick}){
                         {
                             _.map(albumResults, (card) => (
                                 <div key={card.title + '_' + card.artist} className="card">
-                                    <div className="card-image" onClick={() => onNameClick("view", {album: card.title, by: card.artist, type: "album"})}>
+                                    <div className="card-image" onClick={() => props.onNameClick("view", {album: card.title, by: card.artist, type: "album"})}>
                                         <figure className="image is-1by1">
                                             <img src={card.cover} />
                                         </figure>
@@ -196,9 +200,9 @@ function searchResults({route, songs, albums, artists, onNameClick}){
                                     <div className="card-content">
                                         <div className="media">
                                             <div className="media-content">
-                                                <a onClick={() => onNameClick("view", {album: card.title, by: card.artist, type: "album"})} title={card.title} className="title is-5">{card.title}</a>
+                                                <a onClick={() => props.onNameClick("view", {album: card.title, by: card.artist, type: "album"})} title={card.title} className="title is-5">{card.title}</a>
                                                 <br />
-                                                <a onClick={() => onNameClick("view", {type: "artist", artist: card.artist})} title={card.artist} className="subtitle is-6">{card.artist}</a>
+                                                <a onClick={() => props.onNameClick("view", {type: "artist", artist: card.artist})} title={card.artist} className="subtitle is-6">{card.artist}</a>
                                             </div>
                                         </div>
                                     </div>
@@ -250,7 +254,29 @@ function searchResults({route, songs, albums, artists, onNameClick}){
     );
 }
 
-const DetailView = ({route, songs, albums, artists, onPlayStart, onNameClick}) => {
+class DetailView extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            selected: []
+        };
+    }
+
+    render(){
+        switch(this.props.route.view.type){
+            case "album":
+                return <AlbumDetail {...this.props} />
+            case "artist":
+                return <ArtistDetail {...this.props} />
+            case "search":
+                return <SearchResults {...this.props} />
+            default:
+                return <p>Error: Invalid route detected, {this.props.route.view.type}</p>
+        }
+    }
+}
+
+/* const DetailView = ({route, songs, albums, artists, onPlayStart, onNameClick}) => {
     switch(route.view.type){
         case "album":
             return albumDetail({route, songs, albums, onPlayStart});
@@ -261,6 +287,6 @@ const DetailView = ({route, songs, albums, artists, onPlayStart, onNameClick}) =
         default:
             return <p>Error: Invalid route detected, {route.view.type}</p>
     }
-}
+} */
 
 export default DetailView;

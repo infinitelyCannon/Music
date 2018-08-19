@@ -21,6 +21,7 @@ gulp.task('make-css', function(){
 gulp.task('make', function(){
     browserify('./src/index.js', {debug: true})
         .transform("babelify", {presets: ["babel-preset-env", "babel-preset-react"]})
+        .transform("uglifyify")
         .exclude('electron')
         .exclude("fs")
         .exclude('url')
