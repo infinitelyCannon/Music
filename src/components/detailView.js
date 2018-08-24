@@ -276,17 +276,4 @@ class DetailView extends React.Component{
     }
 }
 
-/* const DetailView = ({route, songs, albums, artists, onPlayStart, onNameClick}) => {
-    switch(route.view.type){
-        case "album":
-            return albumDetail({route, songs, albums, onPlayStart});
-        case "artist":
-            return artistDetail({route, artists, albums, onNameClick});
-        case "search":
-            return searchResults({route, songs, albums, artists, onNameClick});
-        default:
-            return <p>Error: Invalid route detected, {route.view.type}</p>
-    }
-} */
-
 export default DetailView;

@@ -3,8 +3,9 @@ var source = require('vinyl-source-stream');
 var browserify = require('browserify');
 //var babelify = require('babelify');
 var rename = require('gulp-rename');
-//var uglify = require('uglifyify');
+var uglify = require('gulp-uglify');
 var sass = require('gulp-sass');
+var pump = require('pump');
 
 gulp.task('make-css', function(){
     gulp.src('./src/sass/root.scss')
@@ -19,9 +20,8 @@ gulp.task('make-css', function(){
 });
 
 gulp.task('make', function(){
-    browserify('./src/index.js', {debug: true})
+    browserify('./src/index.js', {debug: false})
         .transform("babelify", {presets: ["babel-preset-env", "babel-preset-react"]})
-        .transform("uglifyify")
         .exclude('electron')
         .exclude("fs")
         .exclude('url')
@@ -29,6 +29,14 @@ gulp.task('make', function(){
         .pipe(source('./src/index.js'))
         .pipe(rename('main.js'))
         .pipe(gulp.dest('./dist'));
+});
+
+gulp.task('compress', function(){
+    pump([
+        gulp.src('./dist/main.js'),
+        uglify(),
+        gulp.dest('./dist')
+    ]);
 });
 
 gulp.task('watch', function(){
