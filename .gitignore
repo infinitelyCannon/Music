@@ -6,3 +6,6 @@ mockup.svg
 dist/main.js
 dist/css/bundle.min.css
 dist/main.js.map
+/lib/palette/bin
+/lib/palette/build
+/lib/palette/node_modules
