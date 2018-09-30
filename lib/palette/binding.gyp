@@ -6,7 +6,12 @@
             "<!(node -e \"require('nan')\")"
         ],
         "sources": [
-            "src/index.cc"
+            "src/index.cc",
+            "src/ColorCutQuantizer.cpp",
+            "src/Palette.cpp",
+            "src/Swatch.cpp",
+            "src/sync.cpp",
+            "src/Target.cpp"
         ]
     }]
 }

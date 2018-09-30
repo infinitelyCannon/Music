@@ -40,7 +40,7 @@ class ColorCutQuantizer{
         std::vector<int> mHistogram;
         std::vector<Swatch> mQuantizedColors;
         Nan::Callback *mFilters = NULL;
-        float mTempHsl[] = {0.0f, 0.0f, 0.0f};
+        float mTempHsl[3] = {0.0f, 0.0f, 0.0f};
 
         template<typename T> bool compareBox(T left, T right){
             return getVolume(left) < getVolume(right);
