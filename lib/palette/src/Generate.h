@@ -4,7 +4,7 @@
 #include <string>
 
 struct Bitmap{
-    std::vector<uint32_t> pixels;
+    std::vector<int> pixels;
     int width;
     int height;
 };

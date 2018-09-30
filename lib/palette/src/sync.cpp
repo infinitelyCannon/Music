@@ -2,16 +2,17 @@
 #include "Palette.h"
 
 NAN_METHOD(GenerateSync){
-    std::vector<uint32_t> bitmap;
+    std::vector<int> bitmap;
     Bitmap bMap;
-    int bWidth = 0, bHeight = 0, maxColor = 16;
+    int /*bWidth = 0, bHeight = 0,*/ maxColor = 16;
     bool useDefault;
-    v8::Local<v8::Function> *filterFunc;
+    v8::Local<v8::Value> filterFunc;
     Rect *rect = new Rect();
     Palette *pal;
     std::vector<TargetMeta> targets;
+    v8::Local<v8::Value> filter;
 
-    if(!info[0]->IsObject){
+    if(!info[0]->IsObject()){
         return Nan::ThrowError(Nan::New("Palette: argument to be an object").ToLocalChecked());
     }
     if(info.Length() != 1){
@@ -37,7 +38,7 @@ NAN_METHOD(GenerateSync){
         v8::Local<v8::Array> imgArr = v8::Local<v8::Array>::Cast(Nan::Get(jsonObj, bitmapProp).ToLocalChecked());
         v8::Local<v8::Value> width = Nan::Get(jsonObj, widthProp).ToLocalChecked();
         v8::Local<v8::Value> height = Nan::Get(jsonObj, heightProp).ToLocalChecked();
-        for(int i = 0; i < imgArr->Length(); i += 4){
+        for(int i = 0; i < (int) imgArr->Length(); i += 4){
             v8::Local<v8::Value> numR, numG, numB, numA;
             numR = imgArr->Get(i);
             numG = imgArr->Get(i + 1);
@@ -59,19 +60,19 @@ NAN_METHOD(GenerateSync){
     }
 
     if(Nan::HasOwnProperty(jsonObj, filterProp).FromJust()){
-        v8::Local<v8::Value> filter = Nan::Get(jsonObj, filterProp).ToLocalChecked();
+        filter = Nan::Get(jsonObj, filterProp).ToLocalChecked();
         if(filter->IsNull()){
             useDefault = false;
-            filterFunc = NULL;
+            filterFunc = Nan::Null();
         }
         else{
             useDefault = false;
-            filterFunc = &v8::Local<v8::Function>::Cast(filter);
+            filterFunc = v8::Local<v8::Function>::Cast(filter);
         }
     }
     else{
         useDefault = true;
-        filterFunc = NULL;
+        filterFunc = Nan::Null();
     }
 
     if(Nan::HasOwnProperty(jsonObj, mColorProp).FromJust()){
@@ -95,7 +96,7 @@ NAN_METHOD(GenerateSync){
 
     if(Nan::HasOwnProperty(jsonObj, targetProp).FromJust()){
         v8::Local<v8::Array> tArr = v8::Local<v8::Array>::Cast(Nan::Get(jsonObj, targetProp).ToLocalChecked());
-        for(int i = 0; i < tArr->Length(); i++){
+        for(int i = 0; i < (int) tArr->Length(); i++){
             v8::Local<v8::Object> tempTar = tArr->Get(i)->ToObject();
             v8::Local<v8::Array> tempSat = v8::Local<v8::Array>::Cast(Nan::Get(tempTar, Nan::New("saturation").ToLocalChecked()).ToLocalChecked());
             v8::Local<v8::Array> tempLit = v8::Local<v8::Array>::Cast(Nan::Get(tempTar, Nan::New("lightness").ToLocalChecked()).ToLocalChecked());

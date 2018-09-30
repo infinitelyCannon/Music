@@ -144,7 +144,7 @@ class Color{
 
                 G = hue + 0.536f;
                 if(G < 0.0f) G += 1.0f;
-                else if(g > 1.0f) G -= 1.0f;
+                else if(G > 1.0f) G -= 1.0f;
 
                 B = hue - 0.333f;
                 if(B < 0.0f) B += 1.0f;

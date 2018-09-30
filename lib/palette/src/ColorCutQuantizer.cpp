@@ -15,17 +15,18 @@ struct compare{
     }
 } compare;
 
-ColorCutQuantizer::ColorCutQuantizer(std::vector<uint32_t> pixels, int maxColors, v8::Local<v8::Function> *filters, bool useDefault){
+ColorCutQuantizer::ColorCutQuantizer(std::vector<int> pixels, int maxColors, v8::Local<v8::Value> filters, bool useDefault){
     std::vector<int> hist(1 << (QUANTIZE_WORD_WIDTH * 3), 0);
     
     useDefaultFilter = useDefault;
     
-    if(filters != NULL){
-        Nan::Callback callback(*filters);
-        mFilters = &callback;
+    if(!filters->IsNull()){
+        //Nan::Callback callback();
+        //mFilters(v8::Local<v8::Function>::Cast(filters));
+        mFilters = filters;
     }
 
-    for(int i = 0; i < pixels.size(); i++){
+    for(int i = 0; i < (int) pixels.size(); i++){
         int quantizedColor = quantizeFromRgb888(pixels[i]);
         
         pixels[i] = quantizedColor;
@@ -34,7 +35,7 @@ ColorCutQuantizer::ColorCutQuantizer(std::vector<uint32_t> pixels, int maxColors
     }
 
     int distinctColorCount = 0;
-    for(int color = 0; color < hist.size(); color++){
+    for(int color = 0; color < (int) hist.size(); color++){
         if(hist[color] > 0 && shouldIgnoreColor(color)){
             hist[color] = 0;
         }
@@ -46,7 +47,7 @@ ColorCutQuantizer::ColorCutQuantizer(std::vector<uint32_t> pixels, int maxColors
     std::vector<int> colors(distinctColorCount, 0);
 
     int distinctColorIndex = 0;
-    for(int color = 0; color < hist.size(); color++){
+    for(int color = 0; color < (int) hist.size(); color++){
         if(hist[color] > 0){
             colors[distinctColorIndex++] = color;
         }
@@ -80,20 +81,22 @@ bool ColorCutQuantizer::shouldIgnoreColor(Swatch color){
 };
 
 bool ColorCutQuantizer::shouldIgnoreColor(int rgb, float *hsl){
-    if(mFilters != NULL){
+    if(!mFilters->IsNull()){
         const int argc = 4;
         v8::Local<v8::Value> args[argc];
+        v8::Local<v8::Function> tempFunc = v8::Local<v8::Function>::Cast(mFilters);
+        Nan::Callback cb(tempFunc);
 
         args[0] = Nan::New(rgb);
         args[1] = Nan::New(hsl[0]);
         args[2] = Nan::New(hsl[1]);
         args[3] = Nan::New(hsl[2]);
 
-        v8::Local<v8::Value> returnVal = mFilters->Call(argc, args);
+        v8::Local<v8::Value> returnVal = cb.Call(argc, args);
 
         return !returnVal->BooleanValue();
     }
-    else if(mFilters == NULL && useDefaultFilter){
+    else if(mFilters->IsNull() && useDefaultFilter){
         if(!isAllowed(rgb, hsl)) return true;
     }
 
@@ -301,10 +304,10 @@ Vbox *ColorCutQuantizer::newVbox(int lowerIndex, int upperIndex){
 };
 
 void ColorCutQuantizer::splitBoxes(std::vector<Vbox> *boxes, int maxSize){
-    while(boxes->size() < maxSize){
+    while((int) boxes->size() < maxSize){
         Vbox vbox = boxes->back();
 
-        if(&vbox != NULL && canSplit(vbox)){
+        if(/*&vbox != NULL && */canSplit(vbox)){
             boxes->push_back(*splitBox(&vbox));
             std::sort(boxes->begin(), boxes->end(), compare);
 

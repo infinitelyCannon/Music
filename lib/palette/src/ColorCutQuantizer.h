@@ -2,7 +2,6 @@
 #include <nan.h>
 #include "Swatch.h"
 #include "Color.h"
-#include "Filter.h"
 #ifndef _COLOR_QUANT_H
 #define _COLOR_QUANT_H
 
@@ -22,7 +21,7 @@ struct Vbox{
 
 class ColorCutQuantizer{
     public:
-        ColorCutQuantizer(std::vector<uint32_t> pixels, int maxColors, v8::Local<v8::Function> *filters, bool useDefault);
+        ColorCutQuantizer(std::vector<int> pixels, int maxColors, v8::Local<v8::Value> filters, bool useDefault);
         void getQuantizedColors(std::vector<Swatch> *s);
         static void modifySignificantOctect(std::vector<int> *a, int dimension, int lower, int upper);
         static int quantizedRed(int color);
@@ -39,7 +38,7 @@ class ColorCutQuantizer{
         std::vector<int> mColors;
         std::vector<int> mHistogram;
         std::vector<Swatch> mQuantizedColors;
-        Nan::Callback *mFilters = NULL;
+        v8::Local<v8::Value> mFilters;
         float mTempHsl[3] = {0.0f, 0.0f, 0.0f};
 
         template<typename T> bool compareBox(T left, T right){

@@ -1,4 +1,3 @@
-#include "Filter.h"
 #include "Swatch.h"
 #include "Target.h"
 #include "ColorCutQuantizer.h"
@@ -8,7 +7,7 @@
 #define _PALETTE_H
 
 struct Bitmap{
-    std::vector<uint32_t> pixels;
+    std::vector<int> pixels;
     int width;
     int height;
 };
@@ -67,7 +66,7 @@ class Palette{
         void addTarget(Target target);
         void addTarget(TargetMeta meta);
         void clearTargets();
-        std::string generate(v8::Local<v8::Function> *filters, bool useDefault);
+        std::string generate(v8::Local<v8::Value> filters, bool useDefault);
         void generate(std::vector<Swatch> swatches, std::vector<Target> targets);
         Swatch *generateScoredTarget(Target target);
         int getDominantColor();
@@ -92,7 +91,7 @@ class Palette{
         //std::vector<Filter> mFilters;
         Rect *mRegion = NULL;
 
-        std::vector<uint32_t> getPixelsFromBitmap(Bitmap *bitmap);
+        std::vector<int> getPixelsFromBitmap(Bitmap *bitmap);
         Swatch *getMaxScoredSwatchForTarget(Target target);
         bool shouldBeScoredForTarget(Swatch swatch, Target target);
         float generateScore(Swatch swatch, Target target);

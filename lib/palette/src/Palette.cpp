@@ -278,7 +278,7 @@ void Palette::clearRegion(){
 void Palette::addTarget(TargetMeta meta){
     Target tar(&meta);
 
-    for(int i = 0; i < mTargets.size(); i++){
+    for(int i = 0; i < (int) mTargets.size(); i++){
         if(Target::isEqual(mTargets[i], tar))
             return;
     }
@@ -287,7 +287,7 @@ void Palette::addTarget(TargetMeta meta){
 };
 
 void Palette::addTarget(Target target){
-    for(int i = 0; i < mTargets.size(); i++){
+    for(int i = 0; i < (int) mTargets.size(); i++){
         if(Target::isEqual(mTargets[i], target))
             return;
     }
@@ -299,12 +299,12 @@ void Palette::clearTargets(){
     mTargets.clear();
 };
 
-std::vector<uint32_t> Palette::getPixelsFromBitmap(Bitmap *bitmap){
+std::vector<int> Palette::getPixelsFromBitmap(Bitmap *bitmap){
     int bWidth = bitmap->width;
-    int bHeight = bitmap->height;
+    //int bHeight = bitmap->height;
     int regionWidth, regionHeight;
     
-    std::vector<uint32_t> pixels(bitmap->pixels.begin(), bitmap->pixels.end());
+    std::vector<int> pixels(bitmap->pixels.begin(), bitmap->pixels.end());
 
     if(mRegion == NULL){
         return pixels;
@@ -313,7 +313,7 @@ std::vector<uint32_t> Palette::getPixelsFromBitmap(Bitmap *bitmap){
     regionWidth = mRegion->width();
     regionHeight = mRegion->height();
 
-    std::vector<uint32_t> subsetPixels(regionWidth * regionHeight);
+    std::vector<int> subsetPixels(regionWidth * regionHeight);
 
     for(int row = 0; row < regionHeight; row++){
         std::copy(
@@ -434,13 +434,13 @@ int Palette::getDominantColor(){
     return mDominantSwatch->getRgb();
 };
 
-std::string Palette::generate(v8::Local<v8::Function> *filters, bool useDefault){
+std::string Palette::generate(v8::Local<v8::Value> filters, bool useDefault){
     std::string result = "{";
 
     if(mBitmap != NULL){
         ColorCutQuantizer quantizer(getPixelsFromBitmap(mBitmap),
         mMaxColors,
-        useDefault ? filters : NULL, useDefault);
+        filters, useDefault);
 
         quantizer.getQuantizedColors(&mSwatches);
     }
