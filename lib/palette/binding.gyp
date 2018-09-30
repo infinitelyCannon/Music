@@ -12,6 +12,13 @@
             "src/Swatch.cpp",
             "src/sync.cpp",
             "src/Target.cpp"
+        ],
+        "conditions": [
+            ['OS=="win"', {
+                'defines': [
+                    'NOMINMAX'
+                ]
+            }]
         ]
     }]
 }
