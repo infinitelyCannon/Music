@@ -299,12 +299,12 @@ void Palette::clearTargets(){
     mTargets.clear();
 };
 
-std::vector<int> Palette::getPixelsFromBitmap(Bitmap *bitmap){
+std::vector<uint32_t> Palette::getPixelsFromBitmap(Bitmap *bitmap){
     int bWidth = bitmap->width;
     //int bHeight = bitmap->height;
     int regionWidth, regionHeight;
     
-    std::vector<int> pixels(bitmap->pixels.begin(), bitmap->pixels.end());
+    std::vector<uint32_t> pixels(bitmap->pixels.begin(), bitmap->pixels.end());
 
     if(mRegion == NULL){
         return pixels;
@@ -313,7 +313,7 @@ std::vector<int> Palette::getPixelsFromBitmap(Bitmap *bitmap){
     regionWidth = mRegion->width();
     regionHeight = mRegion->height();
 
-    std::vector<int> subsetPixels(regionWidth * regionHeight);
+    std::vector<uint32_t> subsetPixels(regionWidth * regionHeight);
 
     for(int row = 0; row < regionHeight; row++){
         std::copy(
@@ -329,7 +329,7 @@ std::vector<int> Palette::getPixelsFromBitmap(Bitmap *bitmap){
 float *Palette::copyHslValues(Swatch color){
     std::allocator<float> af;
     float *newHsl = af.allocate(3);
-    int sColor = color.getRgb();
+    uint32_t sColor = color.getRgb();
 
     Color::RGBToHSL(Color::red(sColor), Color::green(sColor), Color::blue(sColor), newHsl);
 
@@ -430,7 +430,7 @@ void Palette::generate(std::vector<Swatch> swatches, std::vector<Target> targets
     mUsedColors.clear();
 };
 
-int Palette::getDominantColor(){
+uint32_t Palette::getDominantColor(){
     return mDominantSwatch->getRgb();
 };
 
@@ -442,7 +442,7 @@ std::string Palette::generate(v8::Local<v8::Value> filters, bool useDefault){
         mMaxColors,
         filters, useDefault);
 
-        quantizer.getQuantizedColors(&mSwatches);
+        quantizer.getQuantizedColors(mSwatches);
     }
     
     mDominantSwatch = findDominantSwatch();

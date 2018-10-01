@@ -2,7 +2,7 @@
 #include "Palette.h"
 
 NAN_METHOD(GenerateSync){
-    std::vector<int> bitmap;
+    std::vector<uint32_t> bitmap;
     Bitmap bMap;
     int /*bWidth = 0, bHeight = 0,*/ maxColor = 16;
     bool useDefault;
@@ -44,11 +44,11 @@ NAN_METHOD(GenerateSync){
             numG = imgArr->Get(i + 1);
             numB = imgArr->Get(i + 2);
             numA = imgArr->Get(i + 3);
-            int color = Color::argb(
-                (int) numA->NumberValue(),
-                (int) numR->NumberValue(),
-                (int) numG->NumberValue(),
-                (int) numB->NumberValue()
+            uint32_t color = Color::argb(
+                (uint32_t) numA->NumberValue(),
+                (uint32_t) numR->NumberValue(),
+                (uint32_t) numG->NumberValue(),
+                (uint32_t) numB->NumberValue()
             );
             bitmap.push_back(color);
         }

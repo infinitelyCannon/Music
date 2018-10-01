@@ -5,25 +5,25 @@
 class Swatch{
     public:
         Swatch();
-        Swatch(int color, int population);
-        Swatch(int red, int green, int blue, int population);
+        Swatch(uint32_t color, int population);
+        Swatch(uint32_t red, uint32_t green, uint32_t blue, int population);
         Swatch(float *hsl, int population);
-        int getRgb();
+        uint32_t getRgb();
         float *getHsl();
         int getPopulation();
-        int getTitleTextColor();
-        int getBodyTextColor();
+        uint32_t getTitleTextColor();
+        uint32_t getBodyTextColor();
         std::string toString();
         bool equals(Swatch *s);
         int hashCode();
     private:
-        int mRed;
-        int mGreen;
-        int mBlue;
-        int mRgb;
+        uint32_t mRed;
+        uint32_t mGreen;
+        uint32_t mBlue;
+        uint32_t mRgb;
         int mPopulation;
-        int mTitleTextColor;
-        int mBodyTextColor;
+        uint32_t mTitleTextColor;
+        uint32_t mBodyTextColor;
 
         bool mGeneratedTextColors;
 

@@ -15,19 +15,21 @@ struct compare{
     }
 } compare;
 
-ColorCutQuantizer::ColorCutQuantizer(std::vector<int> pixels, int maxColors, v8::Local<v8::Value> filters, bool useDefault){
+ColorCutQuantizer::ColorCutQuantizer(std::vector<uint32_t> pixels, int maxColors, v8::Local<v8::Value> filters, bool useDefault){
     std::vector<int> hist(1 << (QUANTIZE_WORD_WIDTH * 3), 0);
     
     useDefaultFilter = useDefault;
     
-    if(!filters->IsNull()){
+    /* if(!filters->IsNull()){
         //Nan::Callback callback();
         //mFilters(v8::Local<v8::Function>::Cast(filters));
         mFilters = filters;
-    }
+    } */
+
+    mFilters = filters;
 
     for(int i = 0; i < (int) pixels.size(); i++){
-        int quantizedColor = quantizeFromRgb888(pixels[i]);
+        uint32_t quantizedColor = quantizeFromRgb888(pixels[i]);
         
         pixels[i] = quantizedColor;
 
@@ -44,7 +46,7 @@ ColorCutQuantizer::ColorCutQuantizer(std::vector<int> pixels, int maxColors, v8:
         }
     }
 
-    std::vector<int> colors(distinctColorCount, 0);
+    std::vector<uint32_t> colors(distinctColorCount, 0);
 
     int distinctColorIndex = 0;
     for(int color = 0; color < (int) hist.size(); color++){
@@ -66,12 +68,18 @@ ColorCutQuantizer::ColorCutQuantizer(std::vector<int> pixels, int maxColors, v8:
         }
     }
 
-    std::copy(hist.begin(), hist.end(), mHistogram.begin());
-    std::copy(colors.begin(), colors.end(), mColors.begin());
+    for(int i = 0; i < colors.size(); i++)
+        mColors.push_back(colors[i]);
+    
+    for(int j = 0; j < hist.size(); j++)
+        mHistogram.push_back(hist[j]);
+    
+    //std::copy(hist.begin(), hist.end(), mHistogram.begin());
+    //std::copy(colors.begin(), colors.end(), mColors.begin());
 };
 
-bool ColorCutQuantizer::shouldIgnoreColor(int color565){
-    int rgb = approximateToRgb888(color565);
+bool ColorCutQuantizer::shouldIgnoreColor(uint32_t color565){
+    uint32_t rgb = approximateToRgb888(color565);
     Color::RGBToHSL(Color::red(rgb), Color::green(rgb), Color::blue(rgb), mTempHsl);
     return shouldIgnoreColor(rgb, mTempHsl);
 };
@@ -80,7 +88,7 @@ bool ColorCutQuantizer::shouldIgnoreColor(Swatch color){
     return shouldIgnoreColor(color.getRgb(), color.getHsl());
 };
 
-bool ColorCutQuantizer::shouldIgnoreColor(int rgb, float *hsl){
+bool ColorCutQuantizer::shouldIgnoreColor(uint32_t rgb, float hsl[]){
     if(!mFilters->IsNull()){
         const int argc = 4;
         v8::Local<v8::Value> args[argc];
@@ -103,8 +111,8 @@ bool ColorCutQuantizer::shouldIgnoreColor(int rgb, float *hsl){
     return false;
 };
 
-int ColorCutQuantizer::modifyWordWidth(int value, int currentWidth, int targetWidth){
-    int newValue;
+uint32_t ColorCutQuantizer::modifyWordWidth(uint32_t value, int currentWidth, int targetWidth){
+    uint32_t newValue;
 
     if(targetWidth > currentWidth){
         newValue = value << (targetWidth - currentWidth);
@@ -116,43 +124,43 @@ int ColorCutQuantizer::modifyWordWidth(int value, int currentWidth, int targetWi
     return newValue & ((1 << targetWidth) - 1);
 };
 
-int ColorCutQuantizer::approximateToRgb888(int r, int g, int b){
+uint32_t ColorCutQuantizer::approximateToRgb888(uint32_t r, uint32_t g, uint32_t b){
     return Color::rgb(modifyWordWidth(r, QUANTIZE_WORD_WIDTH, 8),
                 modifyWordWidth(g, QUANTIZE_WORD_WIDTH, 8),
                 modifyWordWidth(b, QUANTIZE_WORD_WIDTH, 8));
 };
 
-int ColorCutQuantizer::approximateToRgb888(int color){
+uint32_t ColorCutQuantizer::approximateToRgb888(uint32_t color){
     return approximateToRgb888(quantizedRed(color), quantizedGreen(color), quantizedBlue(color));
 };
 
-int ColorCutQuantizer::quantizeFromRgb888(int color){
-    int r = modifyWordWidth(Color::red(color), 8, QUANTIZE_WORD_WIDTH);
-    int g = modifyWordWidth(Color::green(color), 8, QUANTIZE_WORD_WIDTH);
-    int b = modifyWordWidth(Color::blue(color), 8, QUANTIZE_WORD_WIDTH);
+uint32_t ColorCutQuantizer::quantizeFromRgb888(uint32_t color){
+    uint32_t r = modifyWordWidth(Color::red(color), 8, QUANTIZE_WORD_WIDTH);
+    uint32_t g = modifyWordWidth(Color::green(color), 8, QUANTIZE_WORD_WIDTH);
+    uint32_t b = modifyWordWidth(Color::blue(color), 8, QUANTIZE_WORD_WIDTH);
     return r << (QUANTIZE_WORD_WIDTH + QUANTIZE_WORD_WIDTH) | g << QUANTIZE_WORD_WIDTH | b;
 };
 
-int ColorCutQuantizer::quantizedRed(int color){
+uint32_t ColorCutQuantizer::quantizedRed(uint32_t color){
     return (color >> (QUANTIZE_WORD_WIDTH + QUANTIZE_WORD_WIDTH)) & QUANTIZE_WORD_MASK;
 };
 
-int ColorCutQuantizer::quantizedBlue(int color){
+uint32_t ColorCutQuantizer::quantizedBlue(uint32_t color){
     return color & QUANTIZE_WORD_MASK;
 };
 
-int ColorCutQuantizer::quantizedGreen(int color){
+uint32_t ColorCutQuantizer::quantizedGreen(uint32_t color){
     return (color >> QUANTIZE_WORD_WIDTH) & QUANTIZE_WORD_MASK;
 };
 
 Swatch *ColorCutQuantizer::getAverageColor(Vbox box){
-    int redSum = 0;
-    int greenSum = 0;
-    int blueSum = 0;
+    uint32_t redSum = 0;
+    uint32_t greenSum = 0;
+    uint32_t blueSum = 0;
     int totalPopulation = 0;
 
     for(int i = box.mLowerIndex; i <= box.mUpperIndex; i++){
-        int color = mColors[i];
+        uint32_t color = mColors[i];
         int colorPopulation = mHistogram[i];
 
         totalPopulation += colorPopulation;
@@ -161,14 +169,14 @@ Swatch *ColorCutQuantizer::getAverageColor(Vbox box){
         blueSum += colorPopulation * ColorCutQuantizer::quantizedBlue(color);
     }
 
-    int redMean = (int) std::round(redSum / (float) totalPopulation);
-    int greenMean = (int) std::round(greenSum / (float) totalPopulation);
-    int blueMean = (int) std::round(blueSum / (float) totalPopulation);
+    uint32_t redMean = (uint32_t) std::round(redSum / (float) totalPopulation);
+    uint32_t greenMean = (uint32_t) std::round(greenSum / (float) totalPopulation);
+    uint32_t blueMean = (uint32_t) std::round(blueSum / (float) totalPopulation);
 
     return new Swatch(ColorCutQuantizer::approximateToRgb888(redMean, greenMean, blueMean), totalPopulation);
 };
 
-void ColorCutQuantizer::modifySignificantOctect(std::vector<int> *a, int dimension, int lower, int upper){
+void ColorCutQuantizer::modifySignificantOctect(std::vector<uint32_t> *a, int dimension, int lower, int upper){
     switch (dimension)
     {
         case COMPONENT_RED:
@@ -177,7 +185,7 @@ void ColorCutQuantizer::modifySignificantOctect(std::vector<int> *a, int dimensi
     
         case COMPONENT_GREEN:
             for(int i = lower; i <= upper; i++){
-                int color = (*a)[i];
+                uint32_t color = (*a)[i];
                 (*a)[i] = quantizedGreen(color) << (QUANTIZE_WORD_WIDTH + QUANTIZE_WORD_WIDTH) |
                 quantizedRed(color) << QUANTIZE_WORD_WIDTH |
                 quantizedBlue(color);
@@ -185,7 +193,7 @@ void ColorCutQuantizer::modifySignificantOctect(std::vector<int> *a, int dimensi
             break;
         case COMPONENT_BLUE:
             for(int i = lower; i <= upper; i++){
-                int color = (*a)[i];
+                uint32_t color = (*a)[i];
                 (*a)[i] = quantizedBlue(color) << (QUANTIZE_WORD_WIDTH + QUANTIZE_WORD_WIDTH) |
                 quantizedGreen(color) << QUANTIZE_WORD_WIDTH |
                 quantizedRed(color);
@@ -196,7 +204,7 @@ void ColorCutQuantizer::modifySignificantOctect(std::vector<int> *a, int dimensi
 
 int ColorCutQuantizer::findSplitPoint(Vbox *box){
     int longestDimension = getLongestColorDimension(*box);
-    std::vector<int> colors(mColors);
+    std::vector<uint32_t> colors(mColors);
     std::vector<int> hist(mHistogram);
 
     modifySignificantOctect(&colors, longestDimension, box->mLowerIndex, box->mUpperIndex);
@@ -246,12 +254,12 @@ Vbox *ColorCutQuantizer::splitBox(Vbox *box){
 };
 
 void ColorCutQuantizer::fitBox(Vbox *box){
-    std::vector<int> colors(mColors);
+    std::vector<uint32_t> colors(mColors);
     std::vector<int> hist(mHistogram);
 
-    int minRed, minGreen, minBlue;
+    uint32_t minRed, minGreen, minBlue;
     minRed = minGreen = minBlue = INT32_MAX;
-    int maxRed, maxGreen, maxBlue;
+    uint32_t maxRed, maxGreen, maxBlue;
     maxRed = maxGreen = maxBlue = INT32_MIN;
     int count = 0;
 
@@ -259,9 +267,9 @@ void ColorCutQuantizer::fitBox(Vbox *box){
         int color = colors[i];
         count += hist[color];
 
-        int r = quantizedRed(color);
-        int g = quantizedGreen(color);
-        int b = quantizedBlue(color);
+        uint32_t r = quantizedRed(color);
+        uint32_t g = quantizedGreen(color);
+        uint32_t b = quantizedBlue(color);
 
         if (r > maxRed) {
             maxRed = r;
@@ -343,8 +351,8 @@ std::vector<Swatch> *ColorCutQuantizer::quantizePixels(int maxColors){
     return generateAverageColors(pq);
 };
 
-void ColorCutQuantizer::getQuantizedColors(std::vector<Swatch> *s){
-    std::copy(mQuantizedColors.begin(), mQuantizedColors.end(), s->begin());
+void ColorCutQuantizer::getQuantizedColors(std::vector<Swatch>& s){
+    std::copy(mQuantizedColors.begin(), mQuantizedColors.end(), s.begin());
 };
 
 int ColorCutQuantizer::getVolume(Vbox box){
