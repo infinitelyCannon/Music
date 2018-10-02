@@ -62,8 +62,8 @@ ColorCutQuantizer::ColorCutQuantizer(std::vector<uint32_t> pixels, int maxColors
         }
     }
     else{
-        std::vector<Swatch> *temp = quantizePixels(maxColors);
-        for(Swatch s : *temp){
+        std::vector<Swatch> temp = quantizePixels(maxColors);
+        for(Swatch s : temp){
             mQuantizedColors.push_back(s);
         }
     }
@@ -153,7 +153,7 @@ uint32_t ColorCutQuantizer::quantizedGreen(uint32_t color){
     return (color >> QUANTIZE_WORD_WIDTH) & QUANTIZE_WORD_MASK;
 };
 
-Swatch *ColorCutQuantizer::getAverageColor(Vbox box){
+Swatch ColorCutQuantizer::getAverageColor(Vbox box){
     uint32_t redSum = 0;
     uint32_t greenSum = 0;
     uint32_t blueSum = 0;
@@ -173,7 +173,8 @@ Swatch *ColorCutQuantizer::getAverageColor(Vbox box){
     uint32_t greenMean = (uint32_t) std::round(greenSum / (float) totalPopulation);
     uint32_t blueMean = (uint32_t) std::round(blueSum / (float) totalPopulation);
 
-    return new Swatch(ColorCutQuantizer::approximateToRgb888(redMean, greenMean, blueMean), totalPopulation);
+    Swatch s(ColorCutQuantizer::approximateToRgb888(redMean, greenMean, blueMean), totalPopulation);
+    return s;
 };
 
 void ColorCutQuantizer::modifySignificantOctect(std::vector<uint32_t> *a, int dimension, int lower, int upper){
@@ -202,26 +203,26 @@ void ColorCutQuantizer::modifySignificantOctect(std::vector<uint32_t> *a, int di
     }
 };
 
-int ColorCutQuantizer::findSplitPoint(Vbox *box){
-    int longestDimension = getLongestColorDimension(*box);
+int ColorCutQuantizer::findSplitPoint(Vbox box){
+    int longestDimension = getLongestColorDimension(box);
     std::vector<uint32_t> colors(mColors);
     std::vector<int> hist(mHistogram);
 
-    modifySignificantOctect(&colors, longestDimension, box->mLowerIndex, box->mUpperIndex);
+    modifySignificantOctect(&colors, longestDimension, box.mLowerIndex, box.mUpperIndex);
 
-    std::sort(colors.begin() + box->mLowerIndex, colors.begin() + box->mUpperIndex + 1);
+    std::sort(colors.begin() + box.mLowerIndex, colors.begin() + box.mUpperIndex + 1);
 
-    modifySignificantOctect(&colors, longestDimension, box->mLowerIndex, box->mUpperIndex);
+    modifySignificantOctect(&colors, longestDimension, box.mLowerIndex, box.mUpperIndex);
 
-    int midPoint = box->mPopulation / 2;
-    for(int i = box->mLowerIndex, count = 0; i <= box->mUpperIndex; i++){
+    int midPoint = box.mPopulation / 2;
+    for(int i = box.mLowerIndex, count = 0; i <= box.mUpperIndex; i++){
         count += hist[colors[i]];
         if(count >= midPoint){
-            return std::min(box->mUpperIndex - 1, i);
+            return std::min(box.mUpperIndex - 1, i);
         }
     }
 
-    return box->mLowerIndex;
+    return box.mLowerIndex;
 }
 
 int ColorCutQuantizer::getLongestColorDimension(Vbox box){
@@ -238,22 +239,22 @@ int ColorCutQuantizer::getLongestColorDimension(Vbox box){
     }
 };
 
-Vbox *ColorCutQuantizer::splitBox(Vbox *box){
-    if(!canSplit(*box)){
+Vbox ColorCutQuantizer::splitBox(Vbox& box){
+    if(!canSplit(box)){
         //Should catch this beforehand. Error to be declaired later.
     }
 
     int splitPoint = findSplitPoint(box);
 
-    Vbox *newBox = newVbox(splitPoint + 1, box->mUpperIndex);
+    Vbox newBox = newVbox(splitPoint + 1, box.mUpperIndex);
 
-    box->mUpperIndex = splitPoint;
+    box.mUpperIndex = splitPoint;
     fitBox(box);
 
     return newBox;
 };
 
-void ColorCutQuantizer::fitBox(Vbox *box){
+void ColorCutQuantizer::fitBox(Vbox& box){
     std::vector<uint32_t> colors(mColors);
     std::vector<int> hist(mHistogram);
 
@@ -263,7 +264,7 @@ void ColorCutQuantizer::fitBox(Vbox *box){
     maxRed = maxGreen = maxBlue = INT32_MIN;
     int count = 0;
 
-    for(int i = box->mLowerIndex; i <= box->mUpperIndex; i++){
+    for(int i = box.mLowerIndex; i <= box.mUpperIndex; i++){
         int color = colors[i];
         count += hist[color];
 
@@ -291,20 +292,20 @@ void ColorCutQuantizer::fitBox(Vbox *box){
         }
     }
 
-    box->mMinRed = minRed;
-    box->mMaxRed = maxRed;
-    box->mMinGreen = minGreen;
-    box->mMaxGreen = maxGreen;
-    box->mMinBlue = minBlue;
-    box->mMaxBlue = maxBlue;
-    box->mPopulation = count;
+    box.mMinRed = minRed;
+    box.mMaxRed = maxRed;
+    box.mMinGreen = minGreen;
+    box.mMaxGreen = maxGreen;
+    box.mMinBlue = minBlue;
+    box.mMaxBlue = maxBlue;
+    box.mPopulation = count;
 };
 
-Vbox *ColorCutQuantizer::newVbox(int lowerIndex, int upperIndex){
-    Vbox *box = new Vbox;
+Vbox ColorCutQuantizer::newVbox(int lowerIndex, int upperIndex){
+    Vbox box;
 
-    box->mLowerIndex = lowerIndex;
-    box->mUpperIndex = upperIndex;
+    box.mLowerIndex = lowerIndex;
+    box.mUpperIndex = upperIndex;
 
     fitBox(box);
 
@@ -316,7 +317,7 @@ void ColorCutQuantizer::splitBoxes(std::vector<Vbox> *boxes, int maxSize){
         Vbox vbox = boxes->back();
 
         if(/*&vbox != NULL && */canSplit(vbox)){
-            boxes->push_back(*splitBox(&vbox));
+            boxes->push_back(splitBox(vbox));
             std::sort(boxes->begin(), boxes->end(), compare);
 
             boxes->push_back(vbox);
@@ -328,22 +329,22 @@ void ColorCutQuantizer::splitBoxes(std::vector<Vbox> *boxes, int maxSize){
     }
 };
 
-std::vector<Swatch> *ColorCutQuantizer::generateAverageColors(std::vector<Vbox> vboxes){
-    std::vector<Swatch> *colors = new std::vector<Swatch>;
+std::vector<Swatch> ColorCutQuantizer::generateAverageColors(std::vector<Vbox> vboxes){
+    std::vector<Swatch> colors;
     for(Vbox box : vboxes){
-        Swatch *s = getAverageColor(box);
-        if(!shouldIgnoreColor(*s)){
-            colors->push_back(*s);
+        Swatch s = getAverageColor(box);
+        if(!shouldIgnoreColor(s)){
+            colors.push_back(s);
         }
     }
 
     return colors;
 };
 
-std::vector<Swatch> *ColorCutQuantizer::quantizePixels(int maxColors){
+std::vector<Swatch> ColorCutQuantizer::quantizePixels(int maxColors){
     std::vector<Vbox> pq;
 
-    pq.push_back(*newVbox(0, mColors.size() - 1));
+    pq.push_back(newVbox(0, mColors.size() - 1));
     std::sort(pq.begin(), pq.end(), compare);
 
     splitBoxes(&pq, maxColors);

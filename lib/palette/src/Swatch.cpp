@@ -8,7 +8,7 @@ Swatch::Swatch(){
     mRgb = 0xffffffff;
     mPopulation = 0;
     mGeneratedTextColors = false;
-    mHsl = NULL;
+    //mHsl = NULL;
 }
 Swatch::Swatch(uint32_t color, int population)
 {
@@ -18,7 +18,7 @@ Swatch::Swatch(uint32_t color, int population)
     mRgb = color;
     mPopulation = population;
     mGeneratedTextColors = false;
-    mHsl = NULL;
+    //mHsl = NULL;
 };
 
 Swatch::Swatch(uint32_t red, uint32_t green, uint32_t blue, int population)
@@ -31,7 +31,7 @@ Swatch::Swatch(uint32_t red, uint32_t green, uint32_t blue, int population)
     mGeneratedTextColors = false;
 };
 
-Swatch::Swatch(float *hsl, int population)
+Swatch::Swatch(float hsl[], int population)
 {
     uint32_t color = Color::HSLToColor(hsl);
     
@@ -40,8 +40,22 @@ Swatch::Swatch(float *hsl, int population)
     mBlue = Color::blue(color);
     mRgb = color;
     mPopulation = population;
-    mHsl = hsl;
+    mHsl[0] = hsl[0];
+    mHsl[1] = hsl[1];
+    mHsl[2] = hsl[2];
     mGeneratedTextColors = false;
+};
+
+void Swatch::copyValues(Swatch s){
+    mRed = s.mRed;
+    mGreen = s.mGreen;
+    mBlue = s.mBlue;
+    mRgb = s.mRgb;
+    mHsl[0] = s.mHsl[0];
+    mHsl[1] = s.mHsl[1];
+    mHsl[2] = s.mHsl[2];
+    mPopulation = s.mPopulation;
+    mGeneratedTextColors = s.mGeneratedTextColors;
 };
 
 uint32_t Swatch::getRgb()
@@ -51,9 +65,9 @@ uint32_t Swatch::getRgb()
 
 float *Swatch::getHsl()
 {
-    if(mHsl == NULL){
+    /* if(mHsl == NULL){
         mHsl = new float[3];
-    }
+    } */
 
     Color::RGBToHSL(mRed, mGreen, mBlue, mHsl);
     return mHsl;

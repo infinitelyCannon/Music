@@ -387,17 +387,19 @@ bool Palette::shouldBeScoredForTarget(Swatch swatch, Target target){
     !(used == mUsedColors.end() ? false : used->second);
 };
 
-Swatch *Palette::getMaxScoredSwatchForTarget(Target target){
+Swatch Palette::getMaxScoredSwatchForTarget(Target target){
     float maxScore = 0.0f;
-    Swatch *maxScoreSwatch = NULL;
+    Swatch maxScoreSwatch(0x00ffffff, -1);
+    bool changed = false;
 
     for(int i = 0, count = mSwatches.size(); i < count; i++){
         Swatch swatch = mSwatches[i];
         if(shouldBeScoredForTarget(swatch, target)){
             float score = generateScore(swatch, target);
-            if(maxScoreSwatch == NULL || score > maxScore){
-                maxScoreSwatch = &swatch;
+            if(!changed || score > maxScore){
+                maxScoreSwatch.copyValues(swatch);
                 maxScore = score;
+                changed = true;
             }
         }
     }
@@ -405,11 +407,11 @@ Swatch *Palette::getMaxScoredSwatchForTarget(Target target){
     return maxScoreSwatch;
 };
 
-Swatch *Palette::generateScoredTarget(Target target){
-    Swatch *maxScoreSwatch = getMaxScoredSwatchForTarget(target);
+Swatch Palette::generateScoredTarget(Target target){
+    Swatch maxScoreSwatch = getMaxScoredSwatchForTarget(target);
 
-    if(maxScoreSwatch != NULL && target.isExclusive()){
-        mUsedColors.insert(std::pair <int, bool> (maxScoreSwatch->getRgb(), true));
+    if(maxScoreSwatch.getRgb() != 0x00ffffff && maxScoreSwatch.getPopulation() != -1 && target.isExclusive()){
+        mUsedColors.insert(std::pair <uint32_t, bool> (maxScoreSwatch.getRgb(), true));
     }
 
     return maxScoreSwatch;
@@ -424,7 +426,7 @@ void Palette::generate(std::vector<Swatch> swatches, std::vector<Target> targets
     for(int i = 0, count = mTargets.size(); i < count; i++){
         Target target = targets[i];
         target.normalizeWeights();
-        mSelectedSwatches.insert(std::pair <Target, Swatch> (target, *generateScoredTarget(target)));
+        mSelectedSwatches.insert(std::pair <Target, Swatch> (target, generateScoredTarget(target)));
     }
 
     mUsedColors.clear();
@@ -450,7 +452,7 @@ std::string Palette::generate(v8::Local<v8::Value> filters, bool useDefault){
     for(int i = 0, count = mTargets.size(); i < count; i++){
         Target target = mTargets[i];
         target.normalizeWeights();
-        mSelectedSwatches.insert(std::pair <Target, Swatch> (target, *generateScoredTarget(target)));
+        mSelectedSwatches.insert(std::pair <Target, Swatch> (target, generateScoredTarget(target)));
     }
 
     mUsedColors.clear();

@@ -16,6 +16,7 @@ class Swatch{
         std::string toString();
         bool equals(Swatch *s);
         int hashCode();
+        void copyValues(Swatch s);
     private:
         uint32_t mRed;
         uint32_t mGreen;
@@ -27,7 +28,7 @@ class Swatch{
 
         bool mGeneratedTextColors;
 
-        float *mHsl;
+        float mHsl[3] = {0.0f, 0.0f, 0.0f};
         float MIN_CONTRAST_BODY_TEXT = 4.5f;
         float MIN_CONTRAST_TITLE_TEXT = 3.0f;
 

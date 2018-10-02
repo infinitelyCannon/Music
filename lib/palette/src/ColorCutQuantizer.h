@@ -48,14 +48,14 @@ class ColorCutQuantizer{
         int getVolume(Vbox box);
         int getColorCount(Vbox box);
         bool canSplit(Vbox box);
-        void fitBox(Vbox *box);
-        Vbox *splitBox(Vbox *box);
+        void fitBox(Vbox& box);
+        Vbox splitBox(Vbox& box);
         int getLongestColorDimension(Vbox box);
-        int findSplitPoint(Vbox *box);
-        Swatch *getAverageColor(Vbox box);
-        Vbox *newVbox(int lowerIndex, int upperIndex);
+        int findSplitPoint(Vbox box);
+        Swatch getAverageColor(Vbox box);
+        Vbox newVbox(int lowerIndex, int upperIndex);
 
-        std::vector<Swatch> *quantizePixels(int maxColors);
+        std::vector<Swatch> quantizePixels(int maxColors);
         bool shouldIgnoreColor(uint32_t color565);
         bool shouldIgnoreColor(Swatch color);
         bool shouldIgnoreColor(uint32_t rgb, float hsl[]);
@@ -64,7 +64,7 @@ class ColorCutQuantizer{
         static uint32_t approximateToRgb888(uint32_t r, uint32_t g, uint32_t b);
         static uint32_t modifyWordWidth(uint32_t value, int currentWidth, int targetWidth);
         void splitBoxes(std::vector<Vbox> *boxes, int maxSize);
-        std::vector<Swatch> *generateAverageColors(std::vector<Vbox> vboxes);
+        std::vector<Swatch> generateAverageColors(std::vector<Vbox> vboxes);
 
         bool isAllowed(uint32_t rgb, float hsl[]){
             return !(hsl[2] >= 0.95f) && // Is considered white

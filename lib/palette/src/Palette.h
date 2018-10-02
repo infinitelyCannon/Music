@@ -60,7 +60,7 @@ class Palette{
         void maximumColorCount(int colors);
         void resizeBitmapArea(int area);
         //void clearFilters();
-        //void addFilter(Filter filter);
+        //void addFilter(Fsilter filter);
         bool setRegion(int l, int t, int r, int b);
         void clearRegion();
         void addTarget(Target target);
@@ -68,7 +68,7 @@ class Palette{
         void clearTargets();
         std::string generate(v8::Local<v8::Value> filters, bool useDefault);
         void generate(std::vector<Swatch> swatches, std::vector<Target> targets);
-        Swatch *generateScoredTarget(Target target);
+        Swatch generateScoredTarget(Target target);
         uint32_t getDominantColor();
     private:
         //static Filter DEFAULT_FILTER;
@@ -92,7 +92,7 @@ class Palette{
         Rect *mRegion = NULL;
 
         std::vector<uint32_t> getPixelsFromBitmap(Bitmap *bitmap);
-        Swatch *getMaxScoredSwatchForTarget(Target target);
+        Swatch getMaxScoredSwatchForTarget(Target target);
         bool shouldBeScoredForTarget(Swatch swatch, Target target);
         float generateScore(Swatch swatch, Target target);
         Swatch *findDominantSwatch();
