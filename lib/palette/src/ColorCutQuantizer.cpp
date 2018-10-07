@@ -46,7 +46,7 @@ ColorCutQuantizer::ColorCutQuantizer(std::vector<int> pixels, int maxColors, v8:
         }
     }
 
-    for(int j = 0; j < hist.size(); j++)
+    for(int j = 0; j < (int) hist.size(); j++)
         mHistogram.push_back(hist[j]);
 
     std::vector<int> colors(distinctColorCount, 0);
@@ -58,7 +58,7 @@ ColorCutQuantizer::ColorCutQuantizer(std::vector<int> pixels, int maxColors, v8:
         }
     }
 
-    for(int i = 0; i < colors.size(); i++)
+    for(int i = 0; i < (int) colors.size(); i++)
         mColors.push_back(colors[i]);
 
     if(distinctColorCount <= maxColors){
@@ -211,7 +211,7 @@ int ColorCutQuantizer::findSplitPoint(Vbox box){
 
     modifySignificantOctect(&colors, longestDimension, box.mLowerIndex, box.mUpperIndex);
 
-    for(int i = 0; i < colors.size(); i++)
+    for(int i = 0; i < (int) colors.size(); i++)
         mColors[i] = colors[i];
 
     int midPoint = box.mPopulation / 2;
