@@ -23,20 +23,14 @@ Palette::Palette(Bitmap *bitmap){
     mSwatches.clear();
 
     TargetMeta temp;
-    temp.mLightnessTargets = new float[3];
     temp.mLightnessTargets[0] = 0.55f;
     temp.mLightnessTargets[1] = 0.74f;
-    temp.mLightnessTargets[2] = 0.74f;
+    temp.mLightnessTargets[2] = 1.0f;
 
-    temp.mSaturationTargets = new float[3];
     temp.mSaturationTargets[0] = 0.35f;
     temp.mSaturationTargets[1] = 1.0f;
     temp.mSaturationTargets[2] = 1.0f;
 
-    temp.mWeights = new float[3];
-    temp.mWeights[0] = 0.24f;
-    temp.mWeights[1] = 0.52f;
-    temp.mWeights[2] = 0.24f;
     temp.name = "lightVibrant";
 
     LIGHT_VIBRANT = Target(&temp);
@@ -51,16 +45,13 @@ Palette::Palette(Bitmap *bitmap){
     temp.mSaturationTargets[1] = 1.0f;
     temp.mSaturationTargets[2] = 1.0f;
 
-    temp.mWeights[0] = 0.24f;
-    temp.mWeights[1] = 0.52f;
-    temp.mWeights[2] = 0.24f;
     temp.name = "vibrant";
 
     VIBRANT = Target(&temp);
 
     mTargets.push_back(VIBRANT);
 
-    temp.mLightnessTargets[0] = 0.26f;
+    temp.mLightnessTargets[0] = 0.0f;
     temp.mLightnessTargets[1] = 0.26f;
     temp.mLightnessTargets[2] = 0.45f;
 
@@ -68,9 +59,6 @@ Palette::Palette(Bitmap *bitmap){
     temp.mSaturationTargets[1] = 1.0f;
     temp.mSaturationTargets[2] = 1.0f;
 
-    temp.mWeights[0] = 0.24f;
-    temp.mWeights[1] = 0.52f;
-    temp.mWeights[2] = 0.24f;
     temp.name = "darkVibrant";
 
     DARK_VIBRANT = Target(&temp);
@@ -79,15 +67,12 @@ Palette::Palette(Bitmap *bitmap){
 
     temp.mLightnessTargets[0] = 0.55f;
     temp.mLightnessTargets[1] = 0.74f;
-    temp.mLightnessTargets[2] = 0.74f;
+    temp.mLightnessTargets[2] = 1.0f;
 
-    temp.mSaturationTargets[0] = 0.3f;
+    temp.mSaturationTargets[0] = 0.0f;
     temp.mSaturationTargets[1] = 0.3f;
     temp.mSaturationTargets[2] = 0.4f;
 
-    temp.mWeights[0] = 0.24f;
-    temp.mWeights[1] = 0.52f;
-    temp.mWeights[2] = 0.24f;
     temp.name = "lightMuted";
 
     LIGHT_MUTED = Target(&temp);
@@ -98,30 +83,24 @@ Palette::Palette(Bitmap *bitmap){
     temp.mLightnessTargets[1] = 0.5f;
     temp.mLightnessTargets[2] = 0.7f;
 
-    temp.mSaturationTargets[0] = 0.3f;
+    temp.mSaturationTargets[0] = 0.0f;
     temp.mSaturationTargets[1] = 0.3f;
     temp.mSaturationTargets[2] = 0.4f;
 
-    temp.mWeights[0] = 0.24f;
-    temp.mWeights[1] = 0.52f;
-    temp.mWeights[2] = 0.24f;
     temp.name = "muted";
 
     MUTED = Target(&temp);
 
     mTargets.push_back(MUTED);
 
-    temp.mLightnessTargets[0] = 0.26f;
+    temp.mLightnessTargets[0] = 0.0f;
     temp.mLightnessTargets[1] = 0.26f;
     temp.mLightnessTargets[2] = 0.45f;
 
-    temp.mSaturationTargets[0] = 0.3f;
+    temp.mSaturationTargets[0] = 0.0f;
     temp.mSaturationTargets[1] = 0.3f;
     temp.mSaturationTargets[2] = 0.4f;
 
-    temp.mWeights[0] = 0.24f;
-    temp.mWeights[1] = 0.52f;
-    temp.mWeights[2] = 0.24f;
     temp.name = "darkMuted";
 
     DARK_MUTED = Target(&temp);
@@ -135,20 +114,15 @@ Palette::Palette(std::vector<Swatch> swatches){
     mBitmap = NULL;
 
     TargetMeta temp;
-    temp.mLightnessTargets = new float[3];
     temp.mLightnessTargets[0] = 0.55f;
     temp.mLightnessTargets[1] = 0.74f;
-    temp.mLightnessTargets[2] = 0.74f;
+    temp.mLightnessTargets[2] = 1.0f;
 
-    temp.mSaturationTargets = new float[3];
     temp.mSaturationTargets[0] = 0.35f;
     temp.mSaturationTargets[1] = 1.0f;
     temp.mSaturationTargets[2] = 1.0f;
 
-    temp.mWeights = new float[3];
-    temp.mWeights[0] = 0.24f;
-    temp.mWeights[1] = 0.52f;
-    temp.mWeights[2] = 0.24f;
+    temp.name = "lightVibrant";
 
     LIGHT_VIBRANT = Target(&temp);
 
@@ -162,15 +136,13 @@ Palette::Palette(std::vector<Swatch> swatches){
     temp.mSaturationTargets[1] = 1.0f;
     temp.mSaturationTargets[2] = 1.0f;
 
-    temp.mWeights[0] = 0.24f;
-    temp.mWeights[1] = 0.52f;
-    temp.mWeights[2] = 0.24f;
+    temp.name = "vibrant";
 
     VIBRANT = Target(&temp);
 
     mTargets.push_back(VIBRANT);
 
-    temp.mLightnessTargets[0] = 0.26f;
+    temp.mLightnessTargets[0] = 0.0f;
     temp.mLightnessTargets[1] = 0.26f;
     temp.mLightnessTargets[2] = 0.45f;
 
@@ -178,9 +150,7 @@ Palette::Palette(std::vector<Swatch> swatches){
     temp.mSaturationTargets[1] = 1.0f;
     temp.mSaturationTargets[2] = 1.0f;
 
-    temp.mWeights[0] = 0.24f;
-    temp.mWeights[1] = 0.52f;
-    temp.mWeights[2] = 0.24f;
+    temp.name = "darkVibrant";
 
     DARK_VIBRANT = Target(&temp);
 
@@ -188,15 +158,13 @@ Palette::Palette(std::vector<Swatch> swatches){
 
     temp.mLightnessTargets[0] = 0.55f;
     temp.mLightnessTargets[1] = 0.74f;
-    temp.mLightnessTargets[2] = 0.74f;
+    temp.mLightnessTargets[2] = 1.0f;
 
-    temp.mSaturationTargets[0] = 0.3f;
+    temp.mSaturationTargets[0] = 0.0f;
     temp.mSaturationTargets[1] = 0.3f;
     temp.mSaturationTargets[2] = 0.4f;
 
-    temp.mWeights[0] = 0.24f;
-    temp.mWeights[1] = 0.52f;
-    temp.mWeights[2] = 0.24f;
+    temp.name = "lightMuted";
 
     LIGHT_MUTED = Target(&temp);
 
@@ -206,29 +174,25 @@ Palette::Palette(std::vector<Swatch> swatches){
     temp.mLightnessTargets[1] = 0.5f;
     temp.mLightnessTargets[2] = 0.7f;
 
-    temp.mSaturationTargets[0] = 0.3f;
+    temp.mSaturationTargets[0] = 0.0f;
     temp.mSaturationTargets[1] = 0.3f;
     temp.mSaturationTargets[2] = 0.4f;
 
-    temp.mWeights[0] = 0.24f;
-    temp.mWeights[1] = 0.52f;
-    temp.mWeights[2] = 0.24f;
+    temp.name = "muted";
 
     MUTED = Target(&temp);
 
     mTargets.push_back(MUTED);
 
-    temp.mLightnessTargets[0] = 0.26f;
+    temp.mLightnessTargets[0] = 0.0f;
     temp.mLightnessTargets[1] = 0.26f;
     temp.mLightnessTargets[2] = 0.45f;
 
-    temp.mSaturationTargets[0] = 0.3f;
+    temp.mSaturationTargets[0] = 0.0f;
     temp.mSaturationTargets[1] = 0.3f;
     temp.mSaturationTargets[2] = 0.4f;
 
-    temp.mWeights[0] = 0.24f;
-    temp.mWeights[1] = 0.52f;
-    temp.mWeights[2] = 0.24f;
+    temp.name = "darkMuted";
 
     DARK_MUTED = Target(&temp);
 

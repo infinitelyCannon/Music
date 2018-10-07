@@ -1,6 +1,18 @@
 #include "sync.h"
 #include "Palette.h"
 
+#define MIN_TARGET_FLOAT 0.0f
+#define MAX_TARGET_FLOAT 1.0f
+
+float clamp(float val, float min, float max){
+    if(val < min)
+        return min;
+    else if(val > max)
+        return max;
+    else
+        return val;
+}
+
 NAN_METHOD(GenerateSync){
     std::vector<int> bitmap;
     Bitmap bMap;
@@ -106,21 +118,25 @@ NAN_METHOD(GenerateSync){
             float s[3], l[3], w[3];
             TargetMeta target;
 
-            s[0] = (float) tempSat->Get(0)->NumberValue();
-            s[1] = (float) tempSat->Get(2)->NumberValue();
-            s[2] = (float) tempSat->Get(1)->NumberValue();
+            //TODO: Add checks to make sure the values and arrays exists.
+            s[0] = clamp((float) tempSat->Get(0)->NumberValue(), MIN_TARGET_FLOAT, MAX_TARGET_FLOAT);
+            s[1] = clamp((float) tempSat->Get(1)->NumberValue(), MIN_TARGET_FLOAT, MAX_TARGET_FLOAT);
+            s[2] = clamp((float) tempSat->Get(2)->NumberValue(), MIN_TARGET_FLOAT, MAX_TARGET_FLOAT);
 
-            l[0] = (float) tempLit->Get(0)->NumberValue();
-            l[1] = (float) tempLit->Get(1)->NumberValue();
-            l[2] = (float) tempLit->Get(2)->NumberValue();
+            l[0] = clamp((float) tempLit->Get(0)->NumberValue(), MIN_TARGET_FLOAT, MAX_TARGET_FLOAT);
+            l[1] = clamp((float) tempLit->Get(1)->NumberValue(), MIN_TARGET_FLOAT, MAX_TARGET_FLOAT);
+            l[2] = clamp((float) tempLit->Get(2)->NumberValue(), MIN_TARGET_FLOAT, MAX_TARGET_FLOAT);
 
-            w[0] = (float) tempWei->Get(0)->NumberValue();
-            w[1] = (float) tempWei->Get(1)->NumberValue();
-            w[2] = (float) tempWei->Get(2)->NumberValue();
+            w[0] = clamp((float) tempWei->Get(0)->NumberValue(), MIN_TARGET_FLOAT, MAX_TARGET_FLOAT);
+            w[1] = clamp((float) tempWei->Get(1)->NumberValue(), MIN_TARGET_FLOAT, MAX_TARGET_FLOAT);
+            w[2] = clamp((float) tempWei->Get(2)->NumberValue(), MIN_TARGET_FLOAT, MAX_TARGET_FLOAT);
 
-            target.mSaturationTargets = s;
-            target.mLightnessTargets = l;
-            target.mWeights = w;
+            for(int t = 0; t < 3; t++){
+                target.mSaturationTargets[i] = s[i];
+                target.mLightnessTargets[i] = l[i];
+                target.mWeights[i] = w[i];
+            }
+            
             target.name = tarName;
 
             targets.push_back(target);

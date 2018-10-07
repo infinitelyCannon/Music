@@ -4,9 +4,9 @@
 
 struct TargetMeta
 {
-    float *mSaturationTargets;
-    float *mLightnessTargets;
-    float *mWeights;
+    float mSaturationTargets[3] = {0.0f, 0.5f, 1.0f};
+    float mLightnessTargets[3] = {0.0f, 0.5f, 1.0f};
+    float mWeights[3] = {0.24f, 0.52f, 0.24f};
     std::string name;
 };
 
