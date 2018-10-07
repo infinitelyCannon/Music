@@ -10,7 +10,7 @@ Swatch::Swatch(){
     mGeneratedTextColors = false;
     //mHsl = NULL;
 }
-Swatch::Swatch(uint32_t color, int population)
+Swatch::Swatch(int color, int population)
 {
     mRed = Color::red(color);
     mGreen = Color::green(color);
@@ -21,7 +21,7 @@ Swatch::Swatch(uint32_t color, int population)
     //mHsl = NULL;
 };
 
-Swatch::Swatch(uint32_t red, uint32_t green, uint32_t blue, int population)
+Swatch::Swatch(int red, int green, int blue, int population)
 {
     mRed = red;
     mGreen = green;
@@ -33,7 +33,7 @@ Swatch::Swatch(uint32_t red, uint32_t green, uint32_t blue, int population)
 
 Swatch::Swatch(float hsl[], int population)
 {
-    uint32_t color = Color::HSLToColor(hsl);
+    int color = Color::HSLToColor(hsl);
     
     mRed = Color::red(color);
     mGreen = Color::green(color);
@@ -58,7 +58,7 @@ void Swatch::copyValues(Swatch s){
     mGeneratedTextColors = s.mGeneratedTextColors;
 };
 
-uint32_t Swatch::getRgb()
+int Swatch::getRgb()
 {
     return mRgb;
 };
@@ -78,13 +78,13 @@ int Swatch::getPopulation()
     return mPopulation;
 };
 
-uint32_t Swatch::getTitleTextColor()
+int Swatch::getTitleTextColor()
 {
     ensureTextColorsGenerated();
     return mTitleTextColor;
 };
 
-uint32_t Swatch::getBodyTextColor()
+int Swatch::getBodyTextColor()
 {
     ensureTextColorsGenerated();
     return mBodyTextColor;
@@ -93,8 +93,8 @@ uint32_t Swatch::getBodyTextColor()
 void Swatch::ensureTextColorsGenerated()
 {
     if(!mGeneratedTextColors){
-        const uint32_t lightBodyAlpha = Color::calculateMinimumAlpha(Color::WHITE, mRgb, MIN_CONTRAST_BODY_TEXT);
-        const uint32_t lightTitleAlpha = Color::calculateMinimumAlpha(Color::WHITE, mRgb, MIN_CONTRAST_TITLE_TEXT);
+        const int lightBodyAlpha = Color::calculateMinimumAlpha(Color::WHITE, mRgb, MIN_CONTRAST_BODY_TEXT);
+        const int lightTitleAlpha = Color::calculateMinimumAlpha(Color::WHITE, mRgb, MIN_CONTRAST_TITLE_TEXT);
 
         if(lightBodyAlpha != -1 && lightTitleAlpha != -1){
             mBodyTextColor = Color::setAlphaComponent(Color::WHITE, lightBodyAlpha);
@@ -103,8 +103,8 @@ void Swatch::ensureTextColorsGenerated()
             return;
         }
 
-        const uint32_t darkBodyAlpha = Color::calculateMinimumAlpha(Color::BLACK, mRgb, MIN_CONTRAST_BODY_TEXT);
-        const uint32_t darkTitleAlpha = Color::calculateMinimumAlpha(Color::BLACK, mRgb, MIN_CONTRAST_TITLE_TEXT);
+        const int darkBodyAlpha = Color::calculateMinimumAlpha(Color::BLACK, mRgb, MIN_CONTRAST_BODY_TEXT);
+        const int darkTitleAlpha = Color::calculateMinimumAlpha(Color::BLACK, mRgb, MIN_CONTRAST_TITLE_TEXT);
 
         if(darkBodyAlpha != -1 && darkTitleAlpha != -1){
             mBodyTextColor = Color::setAlphaComponent(Color::BLACK, darkBodyAlpha);
@@ -144,23 +144,24 @@ int Swatch::hashCode()
 };
 
 std::string Swatch::toString(){
-    uint32_t tColor = getTitleTextColor();
-    uint32_t bColor = getBodyTextColor();
+    int tColor = getTitleTextColor();
+    int bColor = getBodyTextColor();
     std::string color = Color::ToString(mRgb);
     std::string result = "{\"color\": ";
     std::string titleColor = Color::ToString(tColor);
     std::string bodyColor = Color::ToString(bColor);
+    float *hsl = getHsl();
 
     return result +
         color +
         ", \"population\": " +
         std::to_string(mPopulation) +
         ", \"hue\": " +
-        std::to_string(mHsl[0]) +
+        std::to_string(hsl[0]) +
         ", \"saturation\": " +
-        std::to_string(mHsl[1]) +
+        std::to_string(hsl[1]) +
         ", \"lightness\": " +
-        std::to_string(mHsl[2]) +
+        std::to_string(hsl[2]) +
         ", \"titleTextColor\": " +
         titleColor +
         ", \"bodyTextColor\": " +

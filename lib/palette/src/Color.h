@@ -7,33 +7,33 @@
 
 class Color{
     public:
-        const static uint32_t WHITE = 0xffffffff;
-        const static uint32_t BLACK = 0xff000000;
-        static uint32_t alpha(uint32_t color)
+        const static int WHITE = 0xffffffff;
+        const static int BLACK = 0xff000000;
+        static int alpha(int color)
         {
             return ((color >> 24) & 0xff);
         }
-        static uint32_t red(uint32_t color)
+        static int red(int color)
         {
             return ((color >> 16) & 0xff);
         }
-        static uint32_t green(uint32_t color)
+        static int green(int color)
         {
             return ((color >> 8) & 0xff);
         }
-        static uint32_t blue(uint32_t color)
+        static int blue(int color)
         {
             return (color & 0xff);
         }
-        static uint32_t argb(uint32_t a, uint32_t r, uint32_t g, uint32_t b)
+        static int argb(int a, int r, int g, int b)
         {
             return (a & 0xff) << 24 | (r & 0xff) << 16 | (g & 0xff) << 8 | (b & 0xff);
         }
-        static uint32_t rgb(uint32_t r, uint32_t g, uint32_t b)
+        static int rgb(int r, int g, int b)
         {
             return (0xff << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
         }
-        static uint32_t compositeColors(uint32_t foreground, uint32_t background)
+        static int compositeColors(int foreground, int background)
         {
             float alpha1 = alpha(foreground) / 255.0f;
             float alpha2 = alpha(background) / 255.0f;
@@ -43,9 +43,9 @@ class Color{
             float g = (green(foreground) * alpha1) + (green(background) * alpha2 * (1.0f - alpha1));
             float b = (blue(foreground) * alpha1) + (blue(background) * alpha2 * (1.0f - alpha1));
 
-            return argb((uint32_t) a, (uint32_t) r, (uint32_t) g, (uint32_t) b);
+            return argb((int) a, (int) r, (int) g, (int) b);
         }
-        static double calculateLuminance(uint32_t color)
+        static double calculateLuminance(int color)
         {
             double r = red(color) / 255.0;
             r = r < 0.03928 ? r / 12.92 : std::pow((r + 0.055) / 1.055, 2.4);
@@ -58,7 +58,7 @@ class Color{
 
             return (0.2126 * r) + (0.7152 * g) + (0.0722 * b);
         }
-        static double calculateContrast(uint32_t foreground, uint32_t background)
+        static double calculateContrast(int foreground, int background)
         {
             if(alpha(background) != 255){
                 std::cerr << "Error: background cannot be translucent." << std::endl;
@@ -74,14 +74,14 @@ class Color{
 
             return std::fmax(luminance1, luminance2) / std::fmin(luminance1, luminance2);
         }
-        static uint32_t calculateMinimumAlpha(uint32_t foreground, uint32_t background, float minContrastRatio)
+        static int calculateMinimumAlpha(int foreground, int background, float minContrastRatio)
         {
             if(alpha(background) != 255){
                 //TODO: Figure out how to have this return an error in wasm.
                 std::cerr << "Error: background color cannot be translucent." << std::endl;
             }
 
-            uint32_t testForeground = setAlphaComponent(foreground, 255);
+            int testForeground = setAlphaComponent(foreground, 255);
             double testRatio = calculateContrast(testForeground, background);
             if(testRatio < minContrastRatio){
                 // Fully opaque foreground does not have sufficient contrast, return error
@@ -89,11 +89,11 @@ class Color{
             }
 
             int numIterations = 0;
-            uint32_t minAlpha = 0;
-            uint32_t maxAlpha = 255;
+            int minAlpha = 0;
+            int maxAlpha = 255;
 
             while(numIterations <= MIN_ALPHA_SEARCH_MAX_ITERATIONS && (maxAlpha - minAlpha) > MIN_ALPHA_SEARCH_PRECISION){
-                uint32_t testAlpha = (minAlpha + maxAlpha) / 2;
+                int testAlpha = (minAlpha + maxAlpha) / 2;
 
                 testForeground = setAlphaComponent(foreground, testAlpha);
                 testRatio = calculateContrast(testForeground, background);
@@ -110,7 +110,7 @@ class Color{
 
             return maxAlpha;
         }
-        static uint32_t setAlphaComponent(uint32_t color, uint32_t alpha)
+        static int setAlphaComponent(int color, int alpha)
         {
             if(alpha < 0 || alpha > 255){
                 std::cerr << "Error: alpha must be between 0 and 255." << std::endl;
@@ -118,14 +118,14 @@ class Color{
 
             return (color & 0x00ffffff) | (alpha << 24);
         }
-        static uint32_t HSLToColor(float *hsl)
+        static int HSLToColor(float *hsl)
         {
-            uint32_t r, b, g;
+            int r, b, g;
             float R, B, G;
             float hue, temp1, temp2;
 
             if(hsl[1] == 0){
-                r = g = b = (uint32_t) std::round(hsl[2] * 255);
+                r = g = b = (int) std::round(hsl[2] * 255);
             }
             else{
                 if(hsl[2] >= 0.5f){
@@ -154,14 +154,14 @@ class Color{
                 G = convertUtil(G, temp1, temp2);
                 B = convertUtil(B, temp1, temp2);
 
-                r = (uint32_t) std::round(R * 255);
-                g = (uint32_t) std::round(G * 255);
-                b = (uint32_t) std::round(B * 255);
+                r = (int) std::round(R * 255);
+                g = (int) std::round(G * 255);
+                b = (int) std::round(B * 255);
             }
 
             return (0xff << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
         }
-        static void RGBToHSL(uint32_t red, uint32_t green, uint32_t blue, float hsl[])
+        static void RGBToHSL(int red, int green, int blue, float hsl[])
         {
             float R, G, B, min, max, H, S, L;
 
@@ -201,8 +201,8 @@ class Color{
             hsl[1] = S;
             hsl[2] = L;
         }
-        static std::string ToString(uint32_t color){
-            std::string result = "rgba(";
+        static std::string ToString(int color){
+            std::string result = "\"rgba(";
 
             result.append(std::to_string(red(color)))
                 .append(", ")
@@ -211,7 +211,7 @@ class Color{
                 .append(std::to_string(blue(color)))
                 .append(", ")
                 .append(std::to_string(alpha(color)))
-                .append(")");
+                .append(")\"");
             
             return result;
         }

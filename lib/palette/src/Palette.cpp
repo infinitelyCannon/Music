@@ -299,12 +299,12 @@ void Palette::clearTargets(){
     mTargets.clear();
 };
 
-std::vector<uint32_t> Palette::getPixelsFromBitmap(Bitmap *bitmap){
+std::vector<int> Palette::getPixelsFromBitmap(Bitmap *bitmap){
     int bWidth = bitmap->width;
     //int bHeight = bitmap->height;
     int regionWidth, regionHeight;
     
-    std::vector<uint32_t> pixels(bitmap->pixels.begin(), bitmap->pixels.end());
+    std::vector<int> pixels(bitmap->pixels.begin(), bitmap->pixels.end());
 
     if(mRegion == NULL){
         return pixels;
@@ -313,7 +313,7 @@ std::vector<uint32_t> Palette::getPixelsFromBitmap(Bitmap *bitmap){
     regionWidth = mRegion->width();
     regionHeight = mRegion->height();
 
-    std::vector<uint32_t> subsetPixels(regionWidth * regionHeight);
+    std::vector<int> subsetPixels(regionWidth * regionHeight);
 
     for(int row = 0; row < regionHeight; row++){
         std::copy(
@@ -329,7 +329,7 @@ std::vector<uint32_t> Palette::getPixelsFromBitmap(Bitmap *bitmap){
 float *Palette::copyHslValues(Swatch color){
     std::allocator<float> af;
     float *newHsl = af.allocate(3);
-    uint32_t sColor = color.getRgb();
+    int sColor = color.getRgb();
 
     Color::RGBToHSL(Color::red(sColor), Color::green(sColor), Color::blue(sColor), newHsl);
 
@@ -339,16 +339,23 @@ float *Palette::copyHslValues(Swatch color){
 Swatch *Palette::findDominantSwatch(){
     int maxPop = INT32_MIN;
     Swatch *maxSwatch = NULL;
+    int resultIndex = -1;
 
-    for(int i = 0, count = mSwatches.size(); i < count; i++){
+    for(int i = 0; i < (int) mSwatches.size(); i++){
         Swatch swatch = mSwatches[i];
         if(swatch.getPopulation() > maxPop){
-            maxSwatch = &swatch;
+            resultIndex = i;
             maxPop = swatch.getPopulation();
         }
     }
 
-    return maxSwatch;
+    if(resultIndex == -1){
+        return maxSwatch;
+    }
+    else{
+        maxSwatch = &mSwatches[resultIndex];
+        return maxSwatch;
+    }
 };
 
 float Palette::generateScore(Swatch swatch, Target target){
@@ -411,7 +418,7 @@ Swatch Palette::generateScoredTarget(Target target){
     Swatch maxScoreSwatch = getMaxScoredSwatchForTarget(target);
 
     if(maxScoreSwatch.getRgb() != 0x00ffffff && maxScoreSwatch.getPopulation() != -1 && target.isExclusive()){
-        mUsedColors.insert(std::pair <uint32_t, bool> (maxScoreSwatch.getRgb(), true));
+        mUsedColors.insert(std::pair <int, bool> (maxScoreSwatch.getRgb(), true));
     }
 
     return maxScoreSwatch;
@@ -432,7 +439,7 @@ void Palette::generate(std::vector<Swatch> swatches, std::vector<Target> targets
     mUsedColors.clear();
 };
 
-uint32_t Palette::getDominantColor(){
+int Palette::getDominantColor(){
     return mDominantSwatch->getRgb();
 };
 
@@ -461,7 +468,7 @@ std::string Palette::generate(v8::Local<v8::Value> filters, bool useDefault){
         result.append("\"")
             .append(t.first.name)
             .append("\": ")
-            .append(t.second.toString())
+            .append(t.second.getPopulation() == -1 ? "null" : t.second.toString())
             .append(",");
     }
 

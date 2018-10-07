@@ -7,7 +7,7 @@
 #define _PALETTE_H
 
 struct Bitmap{
-    std::vector<uint32_t> pixels;
+    std::vector<int> pixels;
     int width;
     int height;
 };
@@ -60,7 +60,7 @@ class Palette{
         void maximumColorCount(int colors);
         void resizeBitmapArea(int area);
         //void clearFilters();
-        //void addFilter(Fsilter filter);
+        //void addFilter(Filter filter);
         bool setRegion(int l, int t, int r, int b);
         void clearRegion();
         void addTarget(Target target);
@@ -69,7 +69,7 @@ class Palette{
         std::string generate(v8::Local<v8::Value> filters, bool useDefault);
         void generate(std::vector<Swatch> swatches, std::vector<Target> targets);
         Swatch generateScoredTarget(Target target);
-        uint32_t getDominantColor();
+        int getDominantColor();
     private:
         //static Filter DEFAULT_FILTER;
         constexpr static int DEFAULT_RESIZE_BITMAP_AREA = 112 * 112;
@@ -81,7 +81,7 @@ class Palette{
         Bitmap *mBitmap = NULL;
         std::vector<Target> mTargets;
         std::map<Target, Swatch> mSelectedSwatches;
-        std::map<uint32_t, bool> mUsedColors;
+        std::map<int, bool> mUsedColors;
         Swatch *mDominantSwatch = NULL;
 
         int mMaxColors = DEFAULT_CALCULATE_NUMBER_COLORS;
@@ -91,7 +91,7 @@ class Palette{
         //std::vector<Filter> mFilters;
         Rect *mRegion = NULL;
 
-        std::vector<uint32_t> getPixelsFromBitmap(Bitmap *bitmap);
+        std::vector<int> getPixelsFromBitmap(Bitmap *bitmap);
         Swatch getMaxScoredSwatchForTarget(Target target);
         bool shouldBeScoredForTarget(Swatch swatch, Target target);
         float generateScore(Swatch swatch, Target target);
