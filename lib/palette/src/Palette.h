@@ -70,6 +70,7 @@ class Palette{
         void generate(std::vector<Swatch> swatches, std::vector<Target> targets);
         Swatch generateScoredTarget(Target target);
         int getDominantColor();
+        void getMatchingColors(int fallback[], bool invert, int &matchingColor, int &swatchColor);
     private:
         //static Filter DEFAULT_FILTER;
         constexpr static int DEFAULT_RESIZE_BITMAP_AREA = 112 * 112;

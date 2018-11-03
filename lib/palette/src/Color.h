@@ -5,6 +5,12 @@
 #include <iostream>
 #include <string>
 
+#define XYZ_WHITE_REFERENCE_X 95.047f
+#define XYZ_WHITE_REFERENCE_Y 100.0f
+#define XYZ_WHITE_REFERENCE_Z 108.883f
+#define XYZ_EPSILON 0.008856f
+#define XYZ_KAPPA 903.3f
+
 class Color{
     public:
         const static int WHITE = 0xffffffff;
@@ -214,6 +220,61 @@ class Color{
                 .append(")\"");
             
             return result;
+        }
+        static float pivotXyzComponent(float component){
+            return component > XYZ_EPSILON ?
+                std::pow(component, 1 / 3.0f)
+                : (XYZ_KAPPA * component + 16) / 116;
+        }
+        static void RGBToXYZ(int r, int g, int b, float outXyz[]){
+            float sr = r / 255.0f;
+            sr = sr < 0.04045 ? sr / 12.92f : std::pow((sr + 0.055f) / 1.055f, 2.4f);
+            float sg = g / 255.0f;
+            sg = sg < 0.04045 ? sg / 12.92f : std::pow((sg + 0.055f) / 1.055f, 2.4f);
+            float sb = b / 255.0f;
+            sb = sb < 0.04045 ? sb / 12.92f : std::pow((sb + 0.055f) / 1.055f, 2.4f);
+
+            outXyz[0] = 100 * (sr * 0.4124f + sg * 0.3576f + sb * 0.1805f);
+            outXyz[1] = 100 * (sr * 0.2126f + sg * 0.7152f + sb * 0.0722f);
+            outXyz[2] = 100 * (sr * 0.0193f + sg * 0.1192f + sb * 0.9505f);
+        }
+        static void XYZToLAB(float x, float y, float z, float outLab[]){
+            if(x < 0.0f || x > XYZ_WHITE_REFERENCE_X)
+                std::cerr << "Illegal Argument Error: X is outside of XYZ range." << std::endl;
+            if(y < 0.0f || x > XYZ_WHITE_REFERENCE_Y)
+                std::cerr << "Illegal Argument Error: Y is outside of XYZ range." << std::endl;
+            if(z < 0.0f || x > XYZ_WHITE_REFERENCE_Z)
+                std::cerr << "Illegal Argument Error: Z is outside of XYZ range." << std::endl;
+
+            x = pivotXyzComponent(x / XYZ_WHITE_REFERENCE_X);
+            y = pivotXyzComponent(y / XYZ_WHITE_REFERENCE_Y);
+            z = pivotXyzComponent(z / XYZ_WHITE_REFERENCE_Z);
+
+            outLab[0] = std::fmax(0, 116 * y - 16);
+            outLab[1] = 500 * (x - y);
+            outLab[2] = 200 * (y - z);
+        }
+        static void RGBToLAB(int r, int g, int b, float outLab[]){
+            RGBToXYZ(r, g, b, outLab);
+
+            XYZToLAB(outLab[0], outLab[1], outLab[2], outLab);
+        }
+        static void colorToLAB(int color, float outLab[]){
+            RGBToLAB(red(color), green(color), blue(color), outLab);
+        }
+        static float distanceEuclidean(float labX[], float labY[]){
+            return std::sqrt(std::pow(labX[0] - labY[0], 2)
+                + std::pow(labX[1] - labY[1], 2)
+                + std::pow(labX[2] - labY[2], 2));
+        }
+        static float calculateDistance(int color0, int color1){
+            float lab0[] = {0.0f, 0.0f, 0.0f};
+            float lab1[] = {0.0f, 0.0f, 0.0f};
+
+            colorToLAB(color0, lab0);
+            colorToLAB(color1, lab1);
+
+            return distanceEuclidean(lab0, lab1);
         }
     private:
         const static int MIN_ALPHA_SEARCH_MAX_ITERATIONS = 10;

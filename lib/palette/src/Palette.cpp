@@ -1,9 +1,12 @@
 #include "Palette.h"
 #include "ColorCutQuantizer.h"
+#include "Color.h"
 #include <iostream>
 #include <algorithm>
 #include <cmath>
 #include <memory>
+
+#define MIN_ALPHA_CONTRAST 4.5
 
 /*
     Todo
@@ -12,6 +15,15 @@
     no comparator existing for Target < Target.
     -Add public get functions
 */
+
+struct DistanceCompare{
+    int color;
+
+    bool operator()(Swatch a, Swatch b) const {
+        return Color::calculateDistance(b.getRgb(), color) > 
+        Color::calculateDistance(a.getRgb(), color);
+    }
+};
 
 Palette::Palette(Bitmap *bitmap){
     if(bitmap == NULL){
@@ -419,6 +431,8 @@ std::string Palette::generate(v8::Local<v8::Value> filters, bool useDefault){
     }
     
     mDominantSwatch = findDominantSwatch();
+    int fallbackColors[] = {0xffffffff, 0xff000000};
+    int textColor, backgroundColor;
 
     for(int i = 0, count = mTargets.size(); i < count; i++){
         Target target = mTargets[i];
@@ -427,6 +441,8 @@ std::string Palette::generate(v8::Local<v8::Value> filters, bool useDefault){
     }
 
     mUsedColors.clear();
+
+    getMatchingColors(fallbackColors, false, backgroundColor, textColor);
 
     for(auto t : mSelectedSwatches){
         result.append("\"")
@@ -438,9 +454,48 @@ std::string Palette::generate(v8::Local<v8::Value> filters, bool useDefault){
 
     result.append("\"dominantColor\": ")
         .append(Color::ToString(getDominantColor()))
+        .append(",\"textColor\": ")
+        .append(Color::ToString(textColor))
+        .append(",\"backgroundColor\": ")
+        .append(Color::ToString(backgroundColor))
         .append("}");
     
     return result;
+};
+
+void Palette::getMatchingColors(int fallback[], bool invert, int &matchingColor, int &swatchColor){
+    if(mDominantSwatch != NULL){
+        std::vector<Swatch> swatches(mSwatches);
+        int swatchC = mDominantSwatch->getRgb();
+        int matchC = -1;
+        DistanceCompare compare;
+        compare.color = swatchC;
+        std::sort(swatches.begin(), swatches.end(), compare);
+
+        for(int i = 0; i < (int) swatches.size(); i++){
+            if(Color::calculateContrast(swatchC, swatches[i].getRgb()) > MIN_ALPHA_CONTRAST){
+                matchC = swatches[0].getRgb();
+                break;
+            }
+        }
+
+        if(matchC == -1){
+            matchC = mDominantSwatch->getBodyTextColor();
+        }
+
+        if(invert){
+            matchingColor = swatchC;
+            swatchColor = matchC;
+            return;
+        }
+
+        matchingColor = matchC;
+        swatchColor = swatchC;
+        return;
+    }
+
+    matchingColor = fallback[1];
+    swatchColor = fallback[0];
 };
 
 /*
