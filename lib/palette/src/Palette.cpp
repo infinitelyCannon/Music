@@ -431,7 +431,7 @@ std::string Palette::generate(v8::Local<v8::Value> filters, bool useDefault){
     }
     
     mDominantSwatch = findDominantSwatch();
-    int fallbackColors[] = {0xffffffff, 0xff000000};
+    unsigned fallbackColors[] = {0xffffffff, 0xff000000};
     int textColor, backgroundColor;
 
     for(int i = 0, count = mTargets.size(); i < count; i++){
@@ -463,7 +463,7 @@ std::string Palette::generate(v8::Local<v8::Value> filters, bool useDefault){
     return result;
 };
 
-void Palette::getMatchingColors(int fallback[], bool invert, int &matchingColor, int &swatchColor){
+void Palette::getMatchingColors(unsigned fallback[], bool invert, int &matchingColor, int &swatchColor){
     if(mDominantSwatch != NULL){
         std::vector<Swatch> swatches(mSwatches);
         int swatchC = mDominantSwatch->getRgb();
