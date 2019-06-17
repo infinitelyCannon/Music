@@ -3,7 +3,7 @@ prokect(MusicApp)
 
 find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets)
 
-add_subdirectory(extern/Mx3)
+add_subdirectory(vendor/Mx3)
 
 set(SOURCES src/main.cpp
 	src/MainWindow.cpp
