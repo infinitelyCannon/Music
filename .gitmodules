@@ -1,0 +1,3 @@
+[submodule "vendor/Mx3"]
+	path = vendor/Mx3
+	url = https://github.com/infinitelyCannon/Mx3.git
