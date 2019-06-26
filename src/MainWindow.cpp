@@ -15,7 +15,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     player = new Player(this);
 
     connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::openMusic);
-    connect(player, &Player::curPos, this, &MainWindow::updatePosition);
+   /*
+	connect(player, &Player::curPos, this, &MainWindow::updatePosition);
     connect(player, &Player::endOfPlayback, this, &MainWindow::endOfPlayback);
     connect(ui->playButton, &QPushButton::clicked, [this] {
         QList<QListWidgetItem *> selected = ui->listWidget->selectedItems();
@@ -23,9 +24,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     });
     connect(ui->pauseButton, &QPushButton::clicked, player, &Player::pause);
     connect(ui->resumeButton, &QPushButton::clicked, player, &Player::resume);
-    connect(ui->stopButton, &QPushButton::clicked, player, &Player::stop);
+    connect(ui->stopButton, &QPushButton::clicked, player, &Player::stop);*/
     connect(QApplication::instance(), &QApplication::aboutToQuit, player, &Player::shouldQuit);
-    connect(ui->volumeSlider, &QSlider::valueChanged, player, &Player::setVolume);
+    //connect(ui->volumeSlider, &QSlider::valueChanged, player, &Player::setVolume);
 
     player->start();
 }
@@ -49,7 +50,7 @@ void MainWindow::endOfPlayback()
 
 void MainWindow::volumeChanged(int value)
 {
-    player->setVolume(value);
+    //player->setVolume(value);
 }
 
 void MainWindow::openMusic()

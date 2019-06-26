@@ -23,5 +23,5 @@ qt5_wrap_cpp(moc_sources ${Q_OBJS})
 
 add_executable(MusicApp ${SOURCES} ${ui_wrap} ${moc_sources})
 target_compile_features(MusicApp PRIVATE cxx_std_14)
-target_include_directories(MusicApp PRIVATE "${CMAKE_SOURCE_DIR}/src/ui")
+target_include_directories(MusicApp PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/ui")
 target_link_libraries(MusicApp Qt5::Core Qt5::Gui Qt5::Widgets Mx3)

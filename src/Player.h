@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "AudioEngine.h"
+//#include "AudioEngine.h"
 #include <QtCore/QTimer>
 #include <QtCore/QThread>
 
@@ -17,10 +17,9 @@ protected:
     void run();
 
 private:
-    DWORD channel;
     QTimer *t;
     bool willQuit = false;
-    AudioEngine *mAudio;
+    void *mAudio;
 
 public slots:
     void shouldQuit();
