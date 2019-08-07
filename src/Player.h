@@ -1,11 +1,11 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-//#include "AudioEngine.h"
+#include "Mx3.hpp"
 #include <QtCore/QTimer>
-#include <QtCore/QThread>
+#include <QtCore/QVector>
 
-class Player : public QThread
+class Player : public QObject
 {
     Q_OBJECT
 public:
@@ -13,29 +13,32 @@ public:
     ~Player();
     bool isPlaying = false;
 
-protected:
-    void run();
-
 private:
-    QTimer *t;
-    bool willQuit = false;
-    void *mAudio;
+    QTimer *tick;
+    Mx3 *mAudio;
+	unsigned int mLength;
+	SA::delegate<void(std::string)> errorDelegate;
+	const static int PLAYER_UPDATE_RATE_MS = 20;
+	QVector<QString> mQueue;
+	unsigned int nowPlaying = 0;
 
 public slots:
-    void shouldQuit();
     void setVolume(int value);
+	void update();
+	void skipNext();
+	void skipBack();
 
 signals:
-    void endOfPlayback();
-    void curPos(double position, double total);
+    void beginPlayback(unsigned int length);
+	void updateUI(unsigned int position);
+	void reportError(std::string msg);
 
 public:
-    double play(QString filepath);
+	void play(QString filepath, QVector<QString> queue);
     void pause();
-    void resume();
     void stop();
-    void signalUpdate();
-    void changePosition(int position);
+    void changePosition(unsigned int position);
+	void errorReceiver(std::string msg);
 };
 
 #endif // PLAYER_H

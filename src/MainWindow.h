@@ -2,8 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QtWidgets/QMainWindow>
+#include <string>
 
 class Player;
+class QListWidgetItem;
 
 namespace Ui
 {
@@ -16,6 +18,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+	static std::string FormatMilli(unsigned int milli);
 
 private:
     Ui::MainWindow *ui;
@@ -23,9 +26,13 @@ private:
     void openMusic();
 
 private slots:
-    void updatePosition(double position, double total);
+    void updatePosition(unsigned int position);
     void endOfPlayback();
-    void volumeChanged(int value);
+	void beginPlayback(QListWidgetItem *item);
+
+public slots:
+	void reportError(std::string msg);
+	void playbackStarted(unsigned int length);
 };
 
 #endif // MAINWINDOW_H

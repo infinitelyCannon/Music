@@ -33,30 +33,54 @@
      <widget class="QWidget" name="widget" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
+        <widget class="QLabel" name="trackLabel">
+         <property name="text">
+          <string>Nothing Playing</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="prevButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../../res/resources.qrc">
+           <normaloff>:/icons/prev.png</normaloff>:/icons/prev.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="playButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="toolTip">
+          <string>Play/Pause</string>
+         </property>
          <property name="text">
-          <string>Play</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../../res/resources.qrc">
+           <normaloff>:/icons/play.png</normaloff>:/icons/play.png</iconset>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pauseButton">
-         <property name="text">
-          <string>Pause</string>
+        <widget class="QPushButton" name="nextButton">
+         <property name="enabled">
+          <bool>false</bool>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="resumeButton">
          <property name="text">
-          <string>Resume</string>
+          <string/>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="stopButton">
-         <property name="text">
-          <string>Stop</string>
+         <property name="icon">
+          <iconset resource="../../res/resources.qrc">
+           <normaloff>:/icons/next.png</normaloff>:/icons/next.png</iconset>
          </property>
         </widget>
        </item>
@@ -74,9 +98,15 @@
         </spacer>
        </item>
        <item>
-        <widget class="QLabel" name="label_2">
-         <property name="text">
+        <widget class="QLabel" name="volLabel">
+         <property name="toolTip">
           <string>Volume</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap resource="../../res/resources.qrc">:/icons/volume.png</pixmap>
          </property>
         </widget>
        </item>
@@ -102,7 +132,7 @@
        <item>
         <widget class="QLabel" name="progressText">
          <property name="text">
-          <string>0:00/0:00</string>
+          <string>0:00</string>
          </property>
         </widget>
        </item>
@@ -122,6 +152,13 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QLabel" name="lengthText">
+         <property name="text">
+          <string>0:00</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -133,7 +170,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -155,7 +192,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../resource.qrc"/>
+  <include location="../../res/resources.qrc"/>
  </resources>
  <connections/>
 </ui>
