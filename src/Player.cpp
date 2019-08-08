@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <iostream>
 #include <string>
+#include <QtCore/QDebug>
 
 Player::Player(QObject *parent) : QObject(parent)
 {
@@ -18,6 +19,16 @@ void Player::errorReceiver(std::string msg)
 	emit reportError(msg);
 }
 
+bool Player::isPaused()
+{
+	return mAudio->isPaused();
+}
+
+bool Player::isPlaying()
+{
+	return mAudio->isPlaying();
+}
+
 void Player::play(QString filepath, QVector<QString> queue)
 {
 	mQueue = queue;
@@ -30,20 +41,19 @@ void Player::play(QString filepath, QVector<QString> queue)
 		}
 	}
 
+	QString name = filepath.mid(filepath.lastIndexOf('/') + 1);
+	playingInfo.name = name;
+
 	mAudio->play(filepath.toStdString());
 	mLength = mAudio->getLength();
+	playingInfo.length = mLength;
 	tick->start(PLAYER_UPDATE_RATE_MS);
-	emit beginPlayback(mLength);
+	emit beginPlayback(mLength, name);
 }
 
 void Player::pause()
 {
 	mAudio->pause();
-
-	if(mAudio->isPaused())
-		tick->stop();
-	else
-		tick->start(PLAYER_UPDATE_RATE_MS);
 }
 
 void Player::skipBack()
@@ -59,8 +69,36 @@ void Player::skipBack()
 	}
 
 	nowPlaying = (nowPlaying - 1) % mQueue.length();
+	QString path = mQueue[nowPlaying];
+	QString name = path.mid(path.lastIndexOf('/') + 1);
+	playingInfo.name = name;
+
 	mAudio->stop();
 	mAudio->play(mQueue[nowPlaying].toStdString());
+	mLength = mAudio->getLength();
+	emit beginPlayback(mLength, playingInfo.name);
+}
+
+void Player::skipNext()
+{
+	if(mQueue.isEmpty())
+		return;
+
+	if(mQueue.length() == 1)
+	{
+		mAudio->changeTimePosition(0);
+		return;
+	}
+
+	nowPlaying = (nowPlaying + 1) % mQueue.length();
+	QString path = mQueue[nowPlaying];
+	QString name = path.mid(path.lastIndexOf('/') + 1);
+	playingInfo.name = name;
+
+	mAudio->stop();
+	mAudio->play(mQueue[nowPlaying].toStdString());
+	mLength = mAudio->getLength();
+	emit beginPlayback(mLength, playingInfo.name);
 }
 
 void Player::stop()

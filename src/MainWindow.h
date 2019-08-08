@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "Player.h"
+
 #include <QtWidgets/QMainWindow>
 #include <string>
 
@@ -32,7 +34,8 @@ private slots:
 
 public slots:
 	void reportError(std::string msg);
-	void playbackStarted(unsigned int length);
+	void playbackStarted(unsigned int length, QString name);
+	void playPause(bool value);
 };
 
 #endif // MAINWINDOW_H

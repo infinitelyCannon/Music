@@ -1,7 +1,6 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include "TrackItem.h"
-#include "Player.h"
 
 #include <QtWidgets/QFileDialog>
 #include <QtCore/QCoreApplication>
@@ -18,6 +17,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::openMusic);
 	connect(ui->listWidget, &QListWidget::itemDoubleClicked, this, &MainWindow::beginPlayback);
 	connect(ui->volumeSlider, &QSlider::valueChanged, player, &Player::setVolume);
+	connect(ui->playButton, &QPushButton::clicked, this, &MainWindow::playPause);
+	connect(ui->nextButton, &QPushButton::clicked, player, &Player::skipNext);
+	connect(ui->prevButton, &QPushButton::clicked, player, &Player::skipBack);
+	connect(ui->progressSlider, &QAbstractSlider::sliderReleased, [this]()
+	{
+		int position = ui->progressSlider->value();
+		player->changePosition(position);
+	});
 	
 	connect(player, &Player::beginPlayback, this, &MainWindow::playbackStarted);
 	connect(player, &Player::updateUI, this, &MainWindow::updatePosition);
@@ -51,7 +58,27 @@ void MainWindow::beginPlayback(QListWidgetItem *item)
 		temp = ui->listWidget->item(++i);
 	}
 
+	QIcon icon(":/icons/pause.png");
+
+	ui->trackLabel->setText(track->getName());
+	ui->playButton->setIcon(icon);
 	player->play(track->getPath(), playlist);
+}
+
+void MainWindow::playPause(bool /*value*/)
+{
+	player->pause();
+
+	if(player->isPaused())
+	{
+		QIcon icon(":/icons/play.png");
+		ui->playButton->setIcon(icon);
+	}
+	else
+	{
+		QIcon icon(":/icons/pause.png");
+		ui->playButton->setIcon(icon);
+	}
 }
 
 void MainWindow::updatePosition(unsigned int position)
@@ -92,7 +119,7 @@ void MainWindow::openMusic()
     QStringList filenames = QFileDialog::getOpenFileNames(this,
                                                     "Load Music File",
                                                     QDir::homePath(),
-                                                    "Music Files (*.mp3 *.ogg *.wav *.aiff *.multi)");
+                                                    "Music Files (*.mp3 *.ogg *.wav *.aiff *.multi *.flac)");
     if (!filenames.isEmpty())
     {
 		for(int i = 0; i < filenames.size(); i++)
@@ -103,7 +130,7 @@ void MainWindow::openMusic()
     }
 }
 
-void MainWindow::playbackStarted(unsigned int length)
+void MainWindow::playbackStarted(unsigned int length, QString name)
 {
 	std::string len = FormatMilli(length);
 	QString str(len.c_str());
@@ -113,6 +140,7 @@ void MainWindow::playbackStarted(unsigned int length)
 	ui->nextButton->setEnabled(true);
 	ui->progressSlider->setMaximum(length);
 	ui->lengthText->setText(str);
+	ui->trackLabel->setText(name);
 }
 
 void MainWindow::reportError(std::string msg)

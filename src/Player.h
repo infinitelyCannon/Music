@@ -5,13 +5,18 @@
 #include <QtCore/QTimer>
 #include <QtCore/QVector>
 
+struct NowPlayingInfo
+{
+	QString name;
+	unsigned int length;
+};
+
 class Player : public QObject
 {
     Q_OBJECT
 public:
     explicit Player(QObject *parent = nullptr);
     ~Player();
-    bool isPlaying = false;
 
 private:
     QTimer *tick;
@@ -21,6 +26,7 @@ private:
 	const static int PLAYER_UPDATE_RATE_MS = 20;
 	QVector<QString> mQueue;
 	unsigned int nowPlaying = 0;
+	NowPlayingInfo playingInfo;
 
 public slots:
     void setVolume(int value);
@@ -29,13 +35,15 @@ public slots:
 	void skipBack();
 
 signals:
-    void beginPlayback(unsigned int length);
+    void beginPlayback(unsigned int length, QString name);
 	void updateUI(unsigned int position);
 	void reportError(std::string msg);
 
 public:
 	void play(QString filepath, QVector<QString> queue);
     void pause();
+	bool isPaused();
+	bool isPlaying();
     void stop();
     void changePosition(unsigned int position);
 	void errorReceiver(std::string msg);
