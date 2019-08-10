@@ -3,6 +3,12 @@
 
 #include <QtWidgets/QListWidgetItem>
 
+struct TrackInfo
+{
+	std::string name;
+	std::string path;
+};
+
 class TrackItem : public QListWidgetItem
 {
 public:
@@ -11,6 +17,7 @@ public:
     QString getPath();
     QString getName();
     bool isMulti();
+	TrackInfo getInfo();
 
 private:
     QString mPath;

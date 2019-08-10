@@ -10,6 +10,16 @@ TrackItem::TrackItem(QListWidget *parent, QString filePath) : QListWidgetItem(pa
     setText(mName);
 }
 
+TrackInfo TrackItem::getInfo()
+{
+	TrackInfo info;
+
+	info.name = mName.toStdString();
+	info.path = mPath.toStdString();
+
+	return info;
+}
+
 QString TrackItem::getPath()
 {
     return mPath;

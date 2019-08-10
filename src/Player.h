@@ -2,6 +2,9 @@
 #define PLAYER_H
 
 #include "Mx3.hpp"
+#include "TrackItem.h"
+
+#include <vector>
 #include <QtCore/QTimer>
 #include <QtCore/QVector>
 
@@ -24,7 +27,7 @@ private:
 	unsigned int mLength;
 	SA::delegate<void(std::string)> errorDelegate;
 	const static int PLAYER_UPDATE_RATE_MS = 20;
-	QVector<QString> mQueue;
+	std::vector<TrackInfo> mQueue;
 	unsigned int nowPlaying = 0;
 	NowPlayingInfo playingInfo;
 
@@ -40,7 +43,7 @@ signals:
 	void reportError(std::string msg);
 
 public:
-	void play(QString filepath, QVector<QString> queue);
+	void play(int index, std::vector<TrackInfo> queue);
     void pause();
 	bool isPaused();
 	bool isPlaying();

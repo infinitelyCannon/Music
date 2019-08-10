@@ -29,24 +29,13 @@ bool Player::isPlaying()
 	return mAudio->isPlaying();
 }
 
-void Player::play(QString filepath, QVector<QString> queue)
+void Player::play(int index, std::vector<TrackInfo> queue)
 {
 	mQueue = queue;
-	for(int i = 0; i < mQueue.length(); i++)
-	{
-		if(mQueue[i].compare(filepath) == 0)
-		{
-			nowPlaying = i;
-			break;
-		}
-	}
+	QString name(mQueue[index].name.c_str());
 
-	QString name = filepath.mid(filepath.lastIndexOf('/') + 1);
-	playingInfo.name = name;
-
-	mAudio->play(filepath.toStdString());
+	mAudio->play(mQueue[index].path);
 	mLength = mAudio->getLength();
-	playingInfo.length = mLength;
 	tick->start(PLAYER_UPDATE_RATE_MS);
 	emit beginPlayback(mLength, name);
 }
@@ -59,46 +48,42 @@ void Player::pause()
 void Player::skipBack()
 {
 	unsigned int position;
-	if(mQueue.isEmpty())
+	if(mQueue.size() == 0)
 		return;
 	position = mAudio->getPosition();
-	if(mQueue.length() == 1 || position <= 1500)
+	if(mQueue.size() == 1 || position <= 1500)
 	{
 		mAudio->changeTimePosition(0);
 		return;
 	}
 
-	nowPlaying = (nowPlaying - 1) % mQueue.length();
-	QString path = mQueue[nowPlaying];
-	QString name = path.mid(path.lastIndexOf('/') + 1);
-	playingInfo.name = name;
+	nowPlaying = (nowPlaying - 1) % mQueue.size();
+	QString name(mQueue[nowPlaying].name.c_str());
 
 	mAudio->stop();
-	mAudio->play(mQueue[nowPlaying].toStdString());
+	mAudio->play(mQueue[nowPlaying].path);
 	mLength = mAudio->getLength();
-	emit beginPlayback(mLength, playingInfo.name);
+	emit beginPlayback(mLength, name);
 }
 
 void Player::skipNext()
 {
-	if(mQueue.isEmpty())
+	if(mQueue.size() == 0)
 		return;
 
-	if(mQueue.length() == 1)
+	if(mQueue.size() == 1)
 	{
 		mAudio->changeTimePosition(0);
 		return;
 	}
 
-	nowPlaying = (nowPlaying + 1) % mQueue.length();
-	QString path = mQueue[nowPlaying];
-	QString name = path.mid(path.lastIndexOf('/') + 1);
-	playingInfo.name = name;
+	nowPlaying = (nowPlaying + 1) % mQueue.size();
+	QString name(mQueue[nowPlaying].name.c_str());
 
 	mAudio->stop();
-	mAudio->play(mQueue[nowPlaying].toStdString());
+	mAudio->play(mQueue[nowPlaying].path);
 	mLength = mAudio->getLength();
-	emit beginPlayback(mLength, playingInfo.name);
+	emit beginPlayback(mLength, name);
 }
 
 void Player::stop()

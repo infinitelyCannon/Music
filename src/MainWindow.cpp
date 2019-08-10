@@ -47,14 +47,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 void MainWindow::beginPlayback(QListWidgetItem *item)
 {
 	TrackItem *track = (TrackItem *) item;
-	QVector<QString> playlist;
+	std::vector<TrackInfo> playlist;
 	int i = 0;
 	QListWidgetItem *temp = ui->listWidget->item(i);
 
 	while(temp != nullptr)
 	{
 		TrackItem *tempTrack = ( TrackItem *) temp;
-		playlist.push_back(tempTrack->getPath());
+		TrackInfo info = tempTrack->getInfo();
+		playlist.push_back(info);
 		temp = ui->listWidget->item(++i);
 	}
 
@@ -62,7 +63,7 @@ void MainWindow::beginPlayback(QListWidgetItem *item)
 
 	ui->trackLabel->setText(track->getName());
 	ui->playButton->setIcon(icon);
-	player->play(track->getPath(), playlist);
+	player->play(ui->listWidget->row(item), playlist);
 }
 
 void MainWindow::playPause(bool /*value*/)
