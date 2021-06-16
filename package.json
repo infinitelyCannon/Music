@@ -1,0 +1,13 @@
+{
+	"name": "music-app",
+	"version": "0.0.1",
+	"description": "A dynamic music player",
+	"main": "main.js",
+	"scripts": {
+
+	},
+	"author": "Dakarai Simmons",
+	"license": "ISC",
+	"dependencies": {},
+	"devDependencies": {}
+}
